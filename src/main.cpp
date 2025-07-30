@@ -6,6 +6,8 @@
 #include <thread>
 #include <cstdint>
 
+#include "frames.cpp"
+
 using namespace std;
 
 void mainloop() {
@@ -42,7 +44,9 @@ void mainloop() {
 
 int main() {
     try {
-        mainloop();
+        string p = string("../Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster) [dQw4w9WgXcQ].mp4");
+        frames_ns::create_frames_from_video(p);
+        //mainloop();
     } catch (const exception& exp) {
         cerr << exp.what() << endl;
         return 1;
