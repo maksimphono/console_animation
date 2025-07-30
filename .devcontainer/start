@@ -1,0 +1,3 @@
+docker start console_video_dev
+docker exec -it console_video_dev /bin/sh
+
