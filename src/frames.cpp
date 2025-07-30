@@ -2,15 +2,17 @@
 #include <cstdlib>
 #include <filesystem>
 #include <string>
+#include <format>
 
 #include "include/frames.hpp"
 
 using namespace std;
 namespace fs = std::filesystem;
 
+#define TEMP_PATH "./.frame.deleteme.jpg"
 
 namespace frames_ns {
-    string exec_command(string& command, uint32_t buffer_size = 256) {
+    string exec_command(string command, uint32_t buffer_size = 256) {
         string result;
         char* buffer = new char[buffer_size];
         FILE* pipe = popen(command.c_str(), "r");
@@ -37,7 +39,7 @@ namespace frames_ns {
         return result;
     }
 
-    bool check_path(string& path) {
+    bool check_path(string path) {
         if (!fs::exists(path)) {
             cerr << "Can't open file " << path << endl;
             // TODO: throw an error
@@ -53,10 +55,37 @@ namespace frames_ns {
 
         return true;
     }
+
+    // TODO: use ubuntu as base image for container, install cmake, git, ffmpeg, jp2a, ncurses, ncurses-dev
+
+    Frame* pick_frame(string& path, uint8_t h, uint8_t m, uint8_t s, uint16_t ms, uint8_t size[2]) {
+        constexpr const char* pick_frame_command_template = "ffmpeg -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
+        const char* convert_frame_command_template = "jp2a --size={0}x{1} {2}";
+        string output = "";
+
+        if (check_path(TEMP_PATH))
+            fs::remove(TEMP_PATH); // clear the temporary file
+
+        cout << format(pick_frame_command_template, h, m, s, ms, path, TEMP_PATH) << endl;
+        exec_command(format(pick_frame_command_template, h, m, s, ms, path, TEMP_PATH));
+
+        if (!check_path(TEMP_PATH)) {
+            cerr << "Couldn't pick a frame" << endl;
+            return nullptr;
+            // TODO: throw error
+        }
+
+        //output = exec_command(format(convert_frame_command_template, size[0], size[1], TEMP_PATH));
+
+        //Frame* frame = new Frame(output);
+
+        return nullptr;// frame;
+    }
     
     void create_frames_from_video(string& path) {
         if (!check_path(path)) return;
+        uint8_t size[2] = {66, 19};
 
-        
+        Frame* frame = pick_frame(path, 0, 0, 0, 500, size);
     }
 }
