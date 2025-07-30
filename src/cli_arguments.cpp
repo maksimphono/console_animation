@@ -38,18 +38,22 @@ namespace cli_arguments_ns {
 
         for (int i = 1; i < n_arg; i++) {
             //cout << i << endl;
+            const char* argument = v_args[i];
             switch (i) {
                 case 1: 
-                    assert_path(v_args[i]); 
-                    cli_arguments.path = v_args[i]; 
+                    assert_path(argument); 
+                    cli_arguments.path = argument; 
                     break;
                 case 2:
                     uint8_t fps;
-                    sscanf(v_args[i], "%hhu", &fps);
+                    sscanf(argument, "%hhu", &fps);
                     cli_arguments.fps = fps;
                     break;
                 case 3: 
-                    cli_arguments.size = v_args[i]; 
+                    uint8_t w, h;
+                    sscanf(argument, "%hhux%hhu", &w, &h);
+                    cli_arguments.size[0] = w;
+                    cli_arguments.size[1] = h;
                     break;
                 default: break;
             }
