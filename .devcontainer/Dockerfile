@@ -4,8 +4,8 @@ WORKDIR /home/src
 
 RUN apk update && \
     apk add git \
-        add ncurses \ 
-        add ncurses-dev \
-        add ffmpeg
+            ncurses \ 
+            ncurses-dev \
+            ffmpeg
 
 CMD ["/bin/sh"]

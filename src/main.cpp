@@ -6,6 +6,8 @@
 #include <thread>
 #include <cstdint>
 
+#include "cli_arguments.cpp"
+
 using namespace std;
 
 void mainloop() {
@@ -40,9 +42,10 @@ void mainloop() {
     endwin(); // cleanup
 }
 
-int main() {
+int main(int arg_num, const char** vargs) {
     try {
-        mainloop();
+        cli_arguments_ns::get_cli_arguments(arg_num, vargs);
+        //mainloop();
     } catch (const exception& exp) {
         cerr << exp.what() << endl;
         return 1;

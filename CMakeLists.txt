@@ -9,6 +9,10 @@ cmake_minimum_required(VERSION 3.10)
 # Project name
 project(Main CXX)
 
+set(CMAKE_CXX_STANDARD 20) # This will tell the compiler to use C++17 features
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+set(CMAKE_CXX_EXTENSIONS FALSE)
+
 # Find the ncurses library
 # find_package will search for ncurses and set variables like NCURSES_LIBRARIES and NCURSES_INCLUDE_DIR
 find_package(Curses REQUIRED)
