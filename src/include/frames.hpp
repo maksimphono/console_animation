@@ -14,11 +14,43 @@ namespace frames_ns {
             this->body = new char[this->len];
             memcpy(this->body, chars.c_str(), this->len);
         }
-        // TODO: Create destructor
+        ~Frame() {
+            delete[] this->body;
+        }
         void put(char* screen) {
             memcpy(screen, this->body, this->len);
         }
     };
+
+    class Timestamp {
+    public:
+        uint8_t hours;
+        uint8_t minutes; 
+        uint8_t seconds; 
+        uint16_t miliseconds;
+        uint32_t time; // total time in miliseconds
+        Timestamp(uint8_t h = 0, uint8_t m = 0, uint8_t s = 0, uint16_t ms = 0)
+            : hours(h), minutes(m), seconds(s), miliseconds(ms) {
+            this->time = this->miliseconds + (uint32_t)seconds * 1000 + (uint32_t)minutes * 60000 + (uint32_t)hours * 3600000;
+        }
+        ~Timestamp() {}
+        void inc(uint16_t ms) {
+            this->time += (uint32_t)ms;
+
+            this->miliseconds = this->time % 1000;
+            this->seconds = (this->time / 1000) % 60;
+            this->minutes = (this->time / 60000) % 60;
+            this->hours = this->time / 3600000;
+        }
+    };
+
+    bool check_path(string path);
+
+    Frame* pick_frame(string& path, Timestamp& ts, uint8_t size[2]);
+
+    uint32_t get_video_duration(string& path);
+
+    void cleanup();
 
     vector<Frame>& create_frames_from_video(string& path);
 }

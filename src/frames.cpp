@@ -36,7 +36,7 @@ namespace frames_ns {
             // TODO: throw an error
         }
 
-        delete buffer;
+        delete[] buffer;
 
         return result;
     }
@@ -57,28 +57,6 @@ namespace frames_ns {
 
         return true;
     }
-
-    class Timestamp {
-    public:
-        uint8_t hours;
-        uint8_t minutes; 
-        uint8_t seconds; 
-        uint16_t miliseconds;
-        uint32_t time; // total time in miliseconds
-        Timestamp(uint8_t h = 0, uint8_t m = 0, uint8_t s = 0, uint16_t ms = 0)
-            : hours(h), minutes(m), seconds(s), miliseconds(ms) {
-            this->time = this->miliseconds + (uint32_t)seconds * 1000 + (uint32_t)minutes * 60000 + (uint32_t)hours * 3600000;
-        }
-        ~Timestamp() {}
-        void inc(uint16_t ms) {
-            this->time += (uint32_t)ms;
-
-            this->miliseconds = this->time % 1000;
-            this->seconds = (this->time / 1000) % 60;
-            this->minutes = (this->time / 60000) % 60;
-            this->hours = this->time / 3600000;
-        }
-    };
 
     Frame* pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
         constexpr const char* pick_frame_command_template = "ffmpeg -loglevel -8 -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
@@ -123,16 +101,22 @@ namespace frames_ns {
 
         return static_cast<uint32_t>(duration * 1000); // duration in miliseconds
     }
+
+    void cleanup() {
+        if (check_path(TEMP_PATH)) {
+            fs::remove(TEMP_PATH);
+        }
+    }
     
     vector<Frame> frames;
 
-    vector<Frame>& create_frames_from_video(string& path) {
-        if (!check_path(path)) return;
-        uint8_t size[2] = {66, 19}, fps = 2;
-        uint16_t inc_ms = 1000 / fps;
-        uint32_t duration = 3100 - 3100 % inc_ms;// get_video_duration(path);
-        Timestamp ts(0,0,0,500);
+    vector<Frame>& create_frames_from_video(string& path, uint8_t size[2], uint8_t fps) {
         vector<Frame>& frames = frames_ns::frames;
+        if (!check_path(path)) return frames;
+        uint16_t inc_ms = 1000 / fps;
+        uint32_t duration = 5100 - 5100 % inc_ms;// get_video_duration(path);
+        Timestamp ts(0,0,0,0);
+
         frames.clear();
 
         while (ts.time < duration) {
@@ -141,8 +125,8 @@ namespace frames_ns {
             //cout << format("{0}:{1}:{2}:{3}\n", ts.hours, ts.minutes, ts.seconds, ts.miliseconds);
         }
 
+        cleanup();
+
         return frames;
-        //cout << pick_frame(path, 0, 0, 0, 500, size)->body << endl;
-        //Frame* frame = pick_frame(path, 0, 0, 0, 500, size);
     }
 }
