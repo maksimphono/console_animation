@@ -56,8 +56,8 @@ namespace frames_ns {
 
         return true;
     }
-
-    Frame* pick_frame(string& path, uint8_t h, uint8_t m, uint8_t s, uint16_t ms, uint8_t size[2]) {
+/*
+    Frame* pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
         constexpr const char* pick_frame_command_template = "ffmpeg -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
         constexpr const char* convert_frame_command_template = "jp2a --size={0}x{1} {2}";
         string output = "";
@@ -66,7 +66,7 @@ namespace frames_ns {
         if (check_path(TEMP_PATH))
             fs::remove(TEMP_PATH); // clear the temporary file
 
-        exec_command(format(pick_frame_command_template, h, m, s, ms, path, TEMP_PATH));
+        exec_command(format(pick_frame_command_template, ts.hours, ts.minutes, ts.seconds, ts.miliseconds, path, TEMP_PATH));
 
         if (!check_path(TEMP_PATH)) {
             cerr << "Couldn't pick a frame" << endl;
@@ -86,32 +86,44 @@ namespace frames_ns {
 
         return frame;
     }
-
+*/
     class Timestamp {
     public:
         uint8_t hours;
         uint8_t minutes; 
         uint8_t seconds; 
         uint16_t miliseconds;
+        uint32_t time; // total time in miliseconds
         Timestamp(uint8_t h = 0, uint8_t m = 0, uint8_t s = 0, uint16_t ms = 0)
-            : hours(h), minutes(m), seconds(s), miliseconds(ms) {}
+            : hours(h), minutes(m), seconds(s), miliseconds(ms) {
+            this->time = this->miliseconds + (uint32_t)seconds * 1000 + (uint32_t)minutes * 60000 + (uint32_t)hours * 3600000;
+        }
         ~Timestamp() {}
         void inc(uint16_t ms) {
-            uint16_t temp = this->miliseconds + ms;
+            this->time += (uint32_t)ms;
 
-            this->miliseconds = temp % 1000;
-            temp = this->seconds + (temp / 1000);
-            this->seconds = temp % 60;
-            temp = this->minutes + (temp / 60);
-            this->minutes = temp % 60;
-            this->hours += (temp / 60);
+            this->miliseconds = this->time % 1000;
+            this->seconds = (this->time / 1000) % 60;
+            this->minutes = (this->time / 60000) % 60;
+            this->hours = this->time / 3600000;
         }
     };
+
+    uint32_t get_video_duration(string& path) {
+        
+    }
     
     void create_frames_from_video(string& path) {
         if (!check_path(path)) return;
         uint8_t size[2] = {66, 19}, fps = 2;
+        uint16_t inc_ms = 1000 / fps;
+        Timestamp ts;
 
+        for (int i = 0; i < 10000; i += 1) {
+            ts.inc(600);
+            cout << format("{0}:{1}:{2}:{3}\n", ts.hours, ts.minutes, ts.seconds, ts.miliseconds);
+
+        }
         //cout << pick_frame(path, 0, 0, 0, 500, size)->body << endl;
         //Frame* frame = pick_frame(path, 0, 0, 0, 500, size);
     }
