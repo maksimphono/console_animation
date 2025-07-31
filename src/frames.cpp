@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <string>
+#include <cstring>
 #include <format>
 
 #include "include/frames.hpp"
@@ -60,7 +61,7 @@ namespace frames_ns {
 
     Frame* pick_frame(string& path, uint8_t h, uint8_t m, uint8_t s, uint16_t ms, uint8_t size[2]) {
         constexpr const char* pick_frame_command_template = "ffmpeg -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
-        const char* convert_frame_command_template = "jp2a --size={0}x{1} {2}";
+        constexpr const char* convert_frame_command_template = "jp2a --size={0}x{1} {2}";
         string output = "";
 
         if (check_path(TEMP_PATH))
@@ -75,17 +76,18 @@ namespace frames_ns {
             // TODO: throw error
         }
 
-        //output = exec_command(format(convert_frame_command_template, size[0], size[1], TEMP_PATH));
+        output = exec_command(format(convert_frame_command_template, size[0], size[1], TEMP_PATH));
 
-        //Frame* frame = new Frame(output);
+        Frame* frame = new Frame(output, size);
 
-        return nullptr;// frame;
+        return frame;
     }
     
     void create_frames_from_video(string& path) {
         if (!check_path(path)) return;
         uint8_t size[2] = {66, 19};
 
-        Frame* frame = pick_frame(path, 0, 0, 0, 500, size);
+        cout << pick_frame(path, 0, 0, 0, 500, size)->body << endl;
+        //Frame* frame = pick_frame(path, 0, 0, 0, 500, size);
     }
 }
