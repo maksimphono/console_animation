@@ -38,17 +38,23 @@ namespace env_arguments_ns {
         const char* raw_fps = getenv("FPS");
         const char* raw_size = getenv("SIZE");
 
-        assert_path(path); 
-        env_arguments.path = string(path);
+        if (path != nullptr) {
+            assert_path(path);
+            env_arguments.path = string(path);
+        }
 
-        uint8_t fps;
-        sscanf(raw_fps, "%hhu", &fps);
-        env_arguments.fps = fps;
+        if (raw_fps != nullptr) {
+            uint8_t fps;
+            sscanf(raw_fps, "%hhu", &fps);
+            env_arguments.fps = fps;
+        }
 
-        uint8_t w, h;
-        sscanf(raw_size, "%hhux%hhu", &w, &h);
-        env_arguments.size[0] = w;
-        env_arguments.size[1] = h;
+        if (raw_size != nullptr) {
+            uint8_t w, h;
+            sscanf(raw_size, "%hhux%hhu", &w, &h);
+            env_arguments.size[0] = w;
+            env_arguments.size[1] = h;
+        }
 
         return env_arguments;
     }
