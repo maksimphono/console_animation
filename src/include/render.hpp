@@ -11,5 +11,5 @@
 
 namespace render_ns {
     void sleep(uint32_t ms);
-    void render(vector<frames_ns::Frame> frames, uint8_t size[2], uint8_t fps);
+    void render(vector<frames_ns::Frame> frames, uint8_t fps);
 }

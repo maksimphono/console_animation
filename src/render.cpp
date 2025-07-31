@@ -7,7 +7,7 @@ namespace render_ns {
         std::this_thread::sleep_for(std::chrono::milliseconds(ms)); // sleep for 500 milliseconds
     }
 
-    void render(vector<frames_ns::Frame> frames, uint8_t size[2], uint8_t fps) {
+    void render(vector<frames_ns::Frame> frames, uint8_t fps) {
         initscr();
         noecho(); // turn off automatic echoing of typed characters
         cbreak(); // make characters available to the program as soon as they are typed
@@ -30,7 +30,7 @@ namespace render_ns {
             mvprintw(0, 0, frames[i].body.c_str());
 
             refresh();
-            sleep(500);
+            sleep(1000 / fps);
             i = ++i % frames.size();
         }
 

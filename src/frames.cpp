@@ -68,11 +68,13 @@ namespace frames_ns {
         }
     }
 
-    vector<Frame>& create_frames_from_video(string& path, uint8_t size[2], uint8_t fps) {
+    vector<Frame>& create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t time_limit_sec = 20) {
         vector<Frame>& frames = _frames;
         if (!check_path(path)) return frames;
         uint16_t inc_ms = 1000 / fps;
-        uint32_t duration = 10100 - 10100 % inc_ms;// get_video_duration(path);
+        uint32_t duration = get_video_duration(path);
+        duration = (time_limit_sec * 1000 > duration)?duration:(time_limit_sec * 1000);
+        duration -= duration % inc_ms;
         Timestamp ts(0,0,1,0);
 
         frames.clear();
