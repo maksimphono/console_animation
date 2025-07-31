@@ -1,9 +1,8 @@
 #pragma once
 
-#include <string>    // For std::string
-#include <ncurses.h> // Include the ncurses library
-#include <vector>    // For std::vector (to store lines of text)
-#include <chrono>    // For std::chrono::seconds, std::chrono::milliseconds
+#include <ncurses.h>
+#include <vector>
+#include <chrono>
 #include <thread>
 #include <cstdint>
 

@@ -70,6 +70,7 @@ namespace frames_ns {
 
     vector<Frame>& create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t time_limit_sec = 20) {
         vector<Frame>& frames = _frames;
+
         if (!check_path(path)) return frames;
         uint16_t inc_ms = 1000 / fps;
         uint32_t duration = get_video_duration(path);
@@ -81,7 +82,6 @@ namespace frames_ns {
 
         while (ts.time < duration) {
             frames.push_back(*pick_frame(path, ts, size));
-            //cout << string(frames.back().body);
             ts.inc(inc_ms);
         }
 
