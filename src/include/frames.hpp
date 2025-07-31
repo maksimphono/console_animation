@@ -6,19 +6,18 @@ namespace frames_ns {
     class Frame {
     public:
         uint16_t len = 0;
-        char* body = nullptr; // flat array, that contains all symbols of the frame
+        string body = ""; // flat array, that contains all symbols of the frame
         uint8_t size[2] = {};
     public:
         Frame(string& chars, uint8_t size[2]){
-            this->len = (size[0] + 1) * size[1];
-            this->body = new char[this->len];
-            memcpy(this->body, chars.c_str(), this->len);
+            this->len = (uint16_t)(size[0] + 1) * (uint16_t)size[1];
+            this->body = string(chars);
+            //this->body[this->len - 1] = '\0';
         }
         ~Frame() {
-            delete[] this->body;
         }
         void put(char* screen) {
-            memcpy(screen, this->body, this->len);
+            //memcpy(screen, this->body, this->len);
         }
     };
 
@@ -43,8 +42,6 @@ namespace frames_ns {
             this->hours = this->time / 3600000;
         }
     };
-
-    bool check_path(string path);
 
     Frame* pick_frame(string& path, Timestamp& ts, uint8_t size[2]);
 

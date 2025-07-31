@@ -45,7 +45,7 @@ void mainloop() {
 int main() {
     try {
         string p = string("../Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster) [dQw4w9WgXcQ].mp4");
-        uint8_t size[2] = {78, 26};
+        uint8_t size[2] = {67, 19};
         frames_ns::create_frames_from_video(p, size, 2);
         //mainloop();
     } catch (const exception& exp) {
