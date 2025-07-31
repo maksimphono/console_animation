@@ -9,10 +9,9 @@ namespace render_ns {
         cbreak(); // make characters available to the program as soon as they are typed
         keypad(stdscr, TRUE); // enable the interpretation of special keys
         nodelay(stdscr, TRUE); // make getch() a non-blocking call
+        nodelay(stdscr, TRUE);
+        curs_set(0);
         clear();
-
-        mvprintw(0, 0, "First line");
-        refresh();
 
         int ch;
         uint32_t i = 0;
@@ -31,7 +30,7 @@ namespace render_ns {
 
             refresh();
             std::this_thread::sleep_for(std::chrono::milliseconds(250)); // sleep for 500 milliseconds
-            i = (i + 1) % frames.size();
+            i = ++i % frames.size();
         }
 
         endwin(); // cleanup
