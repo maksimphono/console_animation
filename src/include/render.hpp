@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <string>    // For std::string
 #include <ncurses.h> // Include the ncurses library
 #include <vector>    // For std::vector (to store lines of text)
@@ -11,5 +10,6 @@
 #include "frames.hpp"
 
 namespace render_ns {
+    void sleep(uint32_t ms);
     void render(vector<frames_ns::Frame> frames, uint8_t size[2], uint8_t fps);
 }

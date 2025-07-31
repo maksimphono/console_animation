@@ -15,10 +15,9 @@ using namespace std;
 int main() {
     try {
         string p = string("../Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster) [dQw4w9WgXcQ].mp4");
-        uint8_t size[2] = {188, 70};
-        vector<frames_ns::Frame> frames = frames_ns::create_frames_from_video(p, size, 4);
+        uint8_t size[2] = {187, 69};
+        vector<frames_ns::Frame> frames = frames_ns::create_frames_from_video(p, size, 2);
         render_ns::render(frames, size, 2);
-        //mainloop();
     } catch (const exception& exp) {
         cerr << exp.what() << endl;
         return 1;
