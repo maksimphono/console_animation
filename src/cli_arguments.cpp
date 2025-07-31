@@ -6,8 +6,6 @@
 
 using namespace std;
 
-#define THROW_WRONG_PATH_EXP(path) \
-    throw ArgumentException(format("Path \"{0}\" is invalid. Input and output paths must be in a Unix style", path));
 
 namespace cli_arguments_ns {
     CliArguments cli_arguments;
@@ -29,7 +27,7 @@ namespace cli_arguments_ns {
         smatch match_info;
 
         if (!regex_match(value, match_info, pattern)) {
-            THROW_WRONG_PATH_EXP(value);
+            // throw error
         }
     }
 
@@ -37,7 +35,6 @@ namespace cli_arguments_ns {
         CliArguments& cli_arguments = cli_arguments_ns::cli_arguments;
 
         for (int i = 1; i < n_arg; i++) {
-            //cout << i << endl;
             const char* argument = v_args[i];
             switch (i) {
                 case 1: 
