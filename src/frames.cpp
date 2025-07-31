@@ -15,7 +15,7 @@ namespace fs = std::filesystem;
 #define TEMP_PATH "./.frame.deleteme.jpg"
 
 namespace frames_ns {
-    vector<Frame> frames; // array, that holds all the frames
+    vector<Frame> _frames; // array, that holds all the frames
 
     Frame* pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
         constexpr const char* pick_frame_command_template = "ffmpeg -loglevel -8 -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
@@ -69,10 +69,10 @@ namespace frames_ns {
     }
 
     vector<Frame>& create_frames_from_video(string& path, uint8_t size[2], uint8_t fps) {
-        vector<Frame>& frames = frames_ns::frames;
+        vector<Frame>& frames = _frames;
         if (!check_path(path)) return frames;
         uint16_t inc_ms = 1000 / fps;
-        uint32_t duration = 5100 - 5100 % inc_ms;// get_video_duration(path);
+        uint32_t duration = 10100 - 10100 % inc_ms;// get_video_duration(path);
         Timestamp ts(0,0,1,0);
 
         frames.clear();
