@@ -56,6 +56,28 @@ namespace frames_ns {
 
         return true;
     }
+
+    class Timestamp {
+    public:
+        uint8_t hours;
+        uint8_t minutes; 
+        uint8_t seconds; 
+        uint16_t miliseconds;
+        uint32_t time; // total time in miliseconds
+        Timestamp(uint8_t h = 0, uint8_t m = 0, uint8_t s = 0, uint16_t ms = 0)
+            : hours(h), minutes(m), seconds(s), miliseconds(ms) {
+            this->time = this->miliseconds + (uint32_t)seconds * 1000 + (uint32_t)minutes * 60000 + (uint32_t)hours * 3600000;
+        }
+        ~Timestamp() {}
+        void inc(uint16_t ms) {
+            this->time += (uint32_t)ms;
+
+            this->miliseconds = this->time % 1000;
+            this->seconds = (this->time / 1000) % 60;
+            this->minutes = (this->time / 60000) % 60;
+            this->hours = this->time / 3600000;
+        }
+    };
 /*
     Frame* pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
         constexpr const char* pick_frame_command_template = "ffmpeg -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
@@ -87,42 +109,31 @@ namespace frames_ns {
         return frame;
     }
 */
-    class Timestamp {
-    public:
-        uint8_t hours;
-        uint8_t minutes; 
-        uint8_t seconds; 
-        uint16_t miliseconds;
-        uint32_t time; // total time in miliseconds
-        Timestamp(uint8_t h = 0, uint8_t m = 0, uint8_t s = 0, uint16_t ms = 0)
-            : hours(h), minutes(m), seconds(s), miliseconds(ms) {
-            this->time = this->miliseconds + (uint32_t)seconds * 1000 + (uint32_t)minutes * 60000 + (uint32_t)hours * 3600000;
-        }
-        ~Timestamp() {}
-        void inc(uint16_t ms) {
-            this->time += (uint32_t)ms;
-
-            this->miliseconds = this->time % 1000;
-            this->seconds = (this->time / 1000) % 60;
-            this->minutes = (this->time / 60000) % 60;
-            this->hours = this->time / 3600000;
-        }
-    };
-
     uint32_t get_video_duration(string& path) {
-        
+        constexpr const char* command_template = "ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 \"{0}\"";
+        double duration = 0;
+        const string output = exec_command(format(command_template, path));
+
+        if (output.length() == 0) {
+            // TODO: throw an error
+        }
+
+        sscanf(output.c_str(), "%lf", &duration);
+
+        return static_cast<uint32_t>(duration * 1000); // duration in miliseconds
     }
     
     void create_frames_from_video(string& path) {
         if (!check_path(path)) return;
         uint8_t size[2] = {66, 19}, fps = 2;
         uint16_t inc_ms = 1000 / fps;
+        uint32_t duration = 2100 - 2100 % inc_ms;// get_video_duration(path);
         Timestamp ts;
 
-        for (int i = 0; i < 10000; i += 1) {
-            ts.inc(600);
-            cout << format("{0}:{1}:{2}:{3}\n", ts.hours, ts.minutes, ts.seconds, ts.miliseconds);
+        while (ts.time < duration) {
+            ts.inc(inc_ms);
 
+            cout << format("{0}:{1}:{2}:{3}\n", ts.hours, ts.minutes, ts.seconds, ts.miliseconds);
         }
         //cout << pick_frame(path, 0, 0, 0, 500, size)->body << endl;
         //Frame* frame = pick_frame(path, 0, 0, 0, 500, size);
