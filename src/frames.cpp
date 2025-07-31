@@ -4,6 +4,7 @@
 #include <string>
 #include <cstring>
 #include <format>
+#include <vector>
 
 #include "include/frames.hpp"
 
@@ -78,9 +79,9 @@ namespace frames_ns {
             this->hours = this->time / 3600000;
         }
     };
-/*
+
     Frame* pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
-        constexpr const char* pick_frame_command_template = "ffmpeg -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
+        constexpr const char* pick_frame_command_template = "ffmpeg -loglevel -8 -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
         constexpr const char* convert_frame_command_template = "jp2a --size={0}x{1} {2}";
         string output = "";
         Frame* frame = nullptr;
@@ -108,7 +109,7 @@ namespace frames_ns {
 
         return frame;
     }
-*/
+
     uint32_t get_video_duration(string& path) {
         constexpr const char* command_template = "ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 \"{0}\"";
         double duration = 0;
@@ -123,18 +124,24 @@ namespace frames_ns {
         return static_cast<uint32_t>(duration * 1000); // duration in miliseconds
     }
     
-    void create_frames_from_video(string& path) {
+    vector<Frame> frames;
+
+    vector<Frame>& create_frames_from_video(string& path) {
         if (!check_path(path)) return;
         uint8_t size[2] = {66, 19}, fps = 2;
         uint16_t inc_ms = 1000 / fps;
-        uint32_t duration = 2100 - 2100 % inc_ms;// get_video_duration(path);
-        Timestamp ts;
+        uint32_t duration = 3100 - 3100 % inc_ms;// get_video_duration(path);
+        Timestamp ts(0,0,0,500);
+        vector<Frame>& frames = frames_ns::frames;
+        frames.clear();
 
         while (ts.time < duration) {
+            frames.push_back(*pick_frame(path, ts, size));
             ts.inc(inc_ms);
-
-            cout << format("{0}:{1}:{2}:{3}\n", ts.hours, ts.minutes, ts.seconds, ts.miliseconds);
+            //cout << format("{0}:{1}:{2}:{3}\n", ts.hours, ts.minutes, ts.seconds, ts.miliseconds);
         }
+
+        return frames;
         //cout << pick_frame(path, 0, 0, 0, 500, size)->body << endl;
         //Frame* frame = pick_frame(path, 0, 0, 0, 500, size);
     }

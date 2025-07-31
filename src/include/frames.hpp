@@ -20,5 +20,5 @@ namespace frames_ns {
         }
     };
 
-    void create_frames_from_video(string& path);
+    vector<Frame>& create_frames_from_video(string& path);
 }
