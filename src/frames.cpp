@@ -57,17 +57,15 @@ namespace frames_ns {
         return true;
     }
 
-    // TODO: use ubuntu as base image for container, install cmake, git, ffmpeg, jp2a, ncurses, ncurses-dev
-
     Frame* pick_frame(string& path, uint8_t h, uint8_t m, uint8_t s, uint16_t ms, uint8_t size[2]) {
         constexpr const char* pick_frame_command_template = "ffmpeg -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
         constexpr const char* convert_frame_command_template = "jp2a --size={0}x{1} {2}";
         string output = "";
+        Frame* frame = nullptr;
 
         if (check_path(TEMP_PATH))
             fs::remove(TEMP_PATH); // clear the temporary file
 
-        cout << format(pick_frame_command_template, h, m, s, ms, path, TEMP_PATH) << endl;
         exec_command(format(pick_frame_command_template, h, m, s, ms, path, TEMP_PATH));
 
         if (!check_path(TEMP_PATH)) {
@@ -78,14 +76,20 @@ namespace frames_ns {
 
         output = exec_command(format(convert_frame_command_template, size[0], size[1], TEMP_PATH));
 
-        Frame* frame = new Frame(output, size);
+        if (output.length() != (size[0] + 1) * size[1]) {
+            cerr << "Couldn't pick a frame" << endl;
+            return nullptr;
+            // TODO: throw error
+        }
+
+        frame = new Frame(output, size);
 
         return frame;
     }
     
     void create_frames_from_video(string& path) {
         if (!check_path(path)) return;
-        uint8_t size[2] = {66, 19};
+        uint8_t size[2] = {66, 19}, fps = 2;
 
         cout << pick_frame(path, 0, 0, 0, 500, size)->body << endl;
         //Frame* frame = pick_frame(path, 0, 0, 0, 500, size);

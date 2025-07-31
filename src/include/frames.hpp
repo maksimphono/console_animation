@@ -13,11 +13,9 @@ namespace frames_ns {
             this->len = (size[0] + 1) * size[1];
             this->body = new char[this->len];
             memcpy(this->body, chars.c_str(), this->len);
-            this->size[0] = size[0];
-            this->size[1] = size[1];
         }
         void put(char* screen) {
-            memcpy(this->body, screen, sizeof(char));
+            memcpy(screen, this->body, this->len);
         }
     };
 
