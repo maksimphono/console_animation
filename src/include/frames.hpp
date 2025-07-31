@@ -14,6 +14,7 @@ namespace frames_ns {
             this->body = new char[this->len];
             memcpy(this->body, chars.c_str(), this->len);
         }
+        // TODO: Create destructor
         void put(char* screen) {
             memcpy(screen, this->body, this->len);
         }

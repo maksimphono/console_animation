@@ -86,12 +86,33 @@ namespace frames_ns {
 
         return frame;
     }
+
+    class Timestamp {
+    public:
+        uint8_t hours;
+        uint8_t minutes; 
+        uint8_t seconds; 
+        uint16_t miliseconds;
+        Timestamp(uint8_t h = 0, uint8_t m = 0, uint8_t s = 0, uint16_t ms = 0)
+            : hours(h), minutes(m), seconds(s), miliseconds(ms) {}
+        ~Timestamp() {}
+        void inc(uint16_t ms) {
+            uint16_t temp = this->miliseconds + ms;
+
+            this->miliseconds = temp % 1000;
+            temp = this->seconds + (temp / 1000);
+            this->seconds = temp % 60;
+            temp = this->minutes + (temp / 60);
+            this->minutes = temp % 60;
+            this->hours += (temp / 60);
+        }
+    };
     
     void create_frames_from_video(string& path) {
         if (!check_path(path)) return;
         uint8_t size[2] = {66, 19}, fps = 2;
 
-        cout << pick_frame(path, 0, 0, 0, 500, size)->body << endl;
+        //cout << pick_frame(path, 0, 0, 0, 500, size)->body << endl;
         //Frame* frame = pick_frame(path, 0, 0, 0, 500, size);
     }
 }
