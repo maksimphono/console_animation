@@ -71,7 +71,10 @@ namespace frames_ns {
 
     void cleanup() {
         if (check_path(TEMP_PATH)) {
-            fs::remove(TEMP_PATH);
+            for (const auto& file : fs::directory_iterator(TEMP_PATH)) {
+                if (fs::is_regular_file(file.status()))
+                    fs::remove(file.path());
+            }
         }
     }
 
@@ -89,6 +92,8 @@ namespace frames_ns {
 
         if (!check_path(TEMP_PATH)) {
             fs::create_directory(TEMP_PATH);
+        } else {
+            cleanup();
         }
 
         while (ts.time < duration) {
