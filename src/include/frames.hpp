@@ -12,6 +12,16 @@
 
 using namespace std;
 
+#define THROW_CANT_CREATE_TEMP_DIR_EXP(path) \
+    throw FramesException(format("Error, can't create temporary directory {0}.", path));
+
+#define THROW_JP2A_PROGRAM_ISSUE_EXP \
+    throw FramesException(format("Error, something is wrong with underlying utility 'jp2a'."));
+
+#define THROW_VIDEO_DURATION_EXP \
+    throw FramesException(format("Error, something is wrong with underlying utility 'ffprobe'."));
+
+
 namespace frames_ns {
     
     DEFINE_EXCEPTION_CLASS(FramesException, "Somthing went wrong with frames creation");

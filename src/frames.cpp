@@ -23,17 +23,15 @@ namespace frames_ns {
         exec_command(format(pick_frame_command_template, ts.hours, ts.minutes, ts.seconds, ts.miliseconds, path, TEMP_PATH));
 
         if (!check_path(TEMP_PATH)) {
-            cerr << "Couldn't pick a frame" << endl;
+            THROW_CANT_CREATE_TEMP_DIR_EXP(TEMP_PATH);
             return nullptr;
-            // TODO: throw error
         }
 
         output = exec_command(format(convert_frame_command_template, size[0], size[1], TEMP_PATH));
 
         if (output.length() != (size[0] + 1) * size[1]) {
-            cerr << "Couldn't pick a frame" << endl;
+            THROW_JP2A_PROGRAM_ISSUE_EXP;
             return nullptr;
-            // TODO: throw error
         }
 
         frame = new Frame(output, size);
@@ -47,7 +45,7 @@ namespace frames_ns {
         const string output = exec_command(format(command_template, path));
 
         if (output.length() == 0) {
-            // TODO: throw an error
+            THROW_VIDEO_DURATION_EXP;
         }
 
         sscanf(output.c_str(), "%lf", &duration);
