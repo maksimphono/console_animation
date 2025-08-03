@@ -10,6 +10,20 @@ namespace fs = std::filesystem;
 namespace frames_ns {
     vector<Frame> _frames; // array, that holds all the frames
 
+    Timestamp::Timestamp(uint8_t h, uint8_t m, uint8_t s, uint16_t ms)
+        : hours(h), minutes(m), seconds(s), miliseconds(ms) {
+        this->time = this->miliseconds + (uint32_t)seconds * 1000 + (uint32_t)minutes * 60000 + (uint32_t)hours * 3600000;
+    }
+
+    void Timestamp::inc(uint16_t ms) {
+        this->time += (uint32_t)ms;
+
+        this->miliseconds = this->time % 1000;
+        this->seconds = (this->time / 1000) % 60;
+        this->minutes = (this->time / 60000) % 60;
+        this->hours = this->time / 3600000;
+    }
+
     Frame* pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
         // TODO: make this multithreaded
         constexpr const char* pick_frame_command_template = "ffmpeg -loglevel -8 -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";

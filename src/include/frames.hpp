@@ -35,11 +35,6 @@ namespace frames_ns {
             this->len = (uint16_t)(size[0] + 1) * (uint16_t)size[1];
             this->body = string(chars);
         }
-        ~Frame() {
-        }
-        void put(char* screen) {
-            //memcpy(screen, this->body, this->len);
-        }
     };
 
     class Timestamp {
@@ -49,19 +44,8 @@ namespace frames_ns {
         uint8_t seconds; 
         uint16_t miliseconds;
         uint32_t time; // total time in miliseconds
-        Timestamp(uint8_t h = 0, uint8_t m = 0, uint8_t s = 0, uint16_t ms = 0)
-            : hours(h), minutes(m), seconds(s), miliseconds(ms) {
-            this->time = this->miliseconds + (uint32_t)seconds * 1000 + (uint32_t)minutes * 60000 + (uint32_t)hours * 3600000;
-        }
-        ~Timestamp() {}
-        void inc(uint16_t ms) {
-            this->time += (uint32_t)ms;
-
-            this->miliseconds = this->time % 1000;
-            this->seconds = (this->time / 1000) % 60;
-            this->minutes = (this->time / 60000) % 60;
-            this->hours = this->time / 3600000;
-        }
+        Timestamp(uint8_t h = 0, uint8_t m = 0, uint8_t s = 0, uint16_t ms = 0);
+        void inc(uint16_t ms);
     };
 
     Frame* pick_frame(string& path, Timestamp& ts, uint8_t size[2]);
