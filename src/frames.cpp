@@ -36,7 +36,6 @@ namespace frames_ns {
         }
 
         output = exec_command(format(convert_frame_command_template, size[0], size[1], TEMP_PATH));
-        //cout << output;
 
         if (output.length() != (size[0] + 1) * size[1]) {
             cerr << "Couldn't pick a frame" << endl;
