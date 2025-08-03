@@ -1,11 +1,20 @@
 #pragma once
 
+#include <cstdlib>
+#include <filesystem>
+#include <string>
+#include <cstring>
+#include <format>
 #include <iostream>
 #include <vector>
+
+#include "./exception.hpp"
 
 using namespace std;
 
 namespace frames_ns {
+    
+    DEFINE_EXCEPTION_CLASS(FramesException, "Somthing went wrong with frames creation");
     class Frame {
     public:
         uint16_t len = 0;

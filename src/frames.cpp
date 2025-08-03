@@ -1,10 +1,3 @@
-#include <cstdlib>
-#include <filesystem>
-#include <string>
-#include <cstring>
-#include <format>
-#include <vector>
-
 #include "utils/check_path.cpp"
 #include "utils/exec_command.cpp"
 #include "include/frames.hpp"

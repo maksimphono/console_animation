@@ -4,6 +4,7 @@
 #include <format>
 
 #include "include/env_arguments.hpp"
+#include "include/exception.hpp"
 
 using namespace std;
 
@@ -19,17 +20,7 @@ using namespace std;
 namespace env_arguments_ns {
     EnvArguments env_arguments;
 
-    class ArgumentException : public exception {
-    private:
-        string _message;
-    public:
-        ArgumentException(const char* message) : _message(message) {}
-        ArgumentException(string message) : _message(message) {}
-
-        const char* what() const noexcept override {
-            return this->_message.c_str();
-        }
-    };
+    DEFINE_EXCEPTION_CLASS(ArgumentException, "Exception with arguments");
 
     void assert_path(string value) {
         regex pattern("^((/|.|..)[^/\\0]+)*(/)?$");
