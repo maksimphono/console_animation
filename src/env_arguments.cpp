@@ -10,8 +10,11 @@ using namespace std;
 #define THROW_PATH_INVALID_EXP(path) \
     throw ArgumentException(format("Can't find file \"{0}\", make sure filename and extension is spelled correctly. Supported file formats: mp4", path))
 
-#define THROW_EXP_INVALID_SIZE(size) \
+#define THROW_SIZE_INVALID_EXP(size) \
     throw ArgumentException(format("Sorry, can't accept size \"{0}\". Make sure to specify size as 'WxH' where 1 <= W, H <= 255", size))
+
+#define THROW_FPS_INVALID_EXP(fps) \
+    throw ArgumentException(format("Sorry, can't accept fps value {0}. Make sure to specify fps value as integer 1 <= fps <= 20", fps))
 
 namespace env_arguments_ns {
     EnvArguments env_arguments;
@@ -42,22 +45,28 @@ namespace env_arguments_ns {
         smatch match_info;
 
         if (!regex_match(raw_size, match_info, pattern)) {
-            THROW_EXP_INVALID_SIZE(raw_size);
+            THROW_SIZE_INVALID_EXP(raw_size);
         }
         uint32_t w, h;
 
         sscanf(raw_size.c_str(), "%ux%u", &w, &h);
 
         if (1 > w || w > 255 || 1 > h || h > 255) {
-            THROW_EXP_INVALID_SIZE(raw_size);
+            THROW_SIZE_INVALID_EXP(raw_size);
         }
 
         env_arguments.size[0] = static_cast<uint8_t>(w);
         env_arguments.size[1] = static_cast<uint8_t>(h);
     }
 
-    bool assert_fps(string fps) {
-        
+    void get_argument_fps(string raw_fps, EnvArguments& env_arguments) {
+            int fps;
+            sscanf(raw_fps.c_str(), "%d", &fps);
+
+            if (fps > 20 || fps < 1)
+                THROW_FPS_INVALID_EXP(fps);
+
+            env_arguments.fps = static_cast<uint8_t>(fps);
     }
 
     EnvArguments& get_env_arguments() {        
@@ -73,9 +82,7 @@ namespace env_arguments_ns {
         }
 
         if (raw_fps != nullptr) {
-            uint8_t fps;
-            sscanf(raw_fps, "%hhu", &fps);
-            env_arguments.fps = fps;
+            get_argument_fps(raw_fps, env_arguments);
         }
 
         if (raw_size != nullptr) {
