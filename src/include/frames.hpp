@@ -46,6 +46,7 @@ namespace frames_ns {
         uint32_t time; // total time in miliseconds
         Timestamp(uint8_t h = 0, uint8_t m = 0, uint8_t s = 0, uint16_t ms = 0);
         void inc(uint16_t ms);
+        string to_string();
     };
 
     Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]);

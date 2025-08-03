@@ -5,7 +5,7 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-#define TEMP_PATH "./.frame.deleteme.jpg"
+#define TEMP_PATH "./.frames.deleteme"
 
 namespace frames_ns {
     vector<Frame> _frames; // array, that holds all the frames
@@ -24,26 +24,33 @@ namespace frames_ns {
         this->hours = this->time / 3600000;
     }
 
+    string Timestamp::to_string() {
+        return format("{0}h{1}m{2}s{3}ms", this->hours, this->minutes, this->seconds, this->miliseconds);
+    }
+
     Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
         // TODO: make this multithreaded
         constexpr const char* pick_frame_command_template = "ffmpeg -loglevel -8 -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
         constexpr const char* convert_frame_command_template = "jp2a --size={0}x{1} {2}";
         string output = "";
+        string temp_file_path = format("{0}/.frame_{1}.jpg", TEMP_PATH, ts.to_string());
 
-        if (check_path(TEMP_PATH))
-            fs::remove(TEMP_PATH); // clear the temporary file
+        if (check_path(temp_file_path))
+            fs::remove(temp_file_path); // clear the temporary file
 
-        exec_command(format(pick_frame_command_template, ts.hours, ts.minutes, ts.seconds, ts.miliseconds, path, TEMP_PATH));
+        exec_command(format(pick_frame_command_template, ts.hours, ts.minutes, ts.seconds, ts.miliseconds, path, temp_file_path));
 
-        if (!check_path(TEMP_PATH)) {
-            THROW_CANT_CREATE_TEMP_DIR_EXP(TEMP_PATH);
+        if (!check_path(temp_file_path)) {
+            THROW_CANT_CREATE_TEMP_DIR_EXP(temp_file_path);
         }
 
-        output = exec_command(format(convert_frame_command_template, size[0], size[1], TEMP_PATH));
+        output = exec_command(format(convert_frame_command_template, size[0], size[1], temp_file_path));
 
         if (output.length() != (size[0] + 1) * size[1]) {
             THROW_JP2A_PROGRAM_ISSUE_EXP;
         }
+
+        //fs::remove(temp_file_path);
 
         return Frame(output, size);
     }
@@ -80,12 +87,16 @@ namespace frames_ns {
 
         frames.clear();
 
+        if (!check_path(TEMP_PATH)) {
+            fs::create_directory(TEMP_PATH);
+        }
+
         while (ts.time < duration) {
             frames.push_back(pick_frame(path, ts, size));
             ts.inc(inc_ms);
         }
 
-        cleanup();
+        //cleanup();
 
         return frames;
     }
