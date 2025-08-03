@@ -1,11 +1,17 @@
 #include <iostream>
 #include <regex>
 #include <exception>
+#include <format>
 
 #include "include/env_arguments.hpp"
 
 using namespace std;
 
+#define THROW_PATH_INVALID_EXP(path) \
+    throw ArgumentException(format("Can't find file \"{0}\", make sure filename and extension is spelled correctly. Supported file formats: mp4", path))
+
+#define THROW_EXP_INVALID_SIZE(size) \
+    throw ArgumentException(format("Sorry, can't accept size \"{0}\". Make sure to specify size as 'WxH' where 1 <= W, H <= 255", size))
 
 namespace env_arguments_ns {
     EnvArguments env_arguments;
@@ -27,8 +33,31 @@ namespace env_arguments_ns {
         smatch match_info;
 
         if (!regex_match(value, match_info, pattern)) {
-            // throw error
+            THROW_PATH_INVALID_EXP(value);
         }
+    }
+
+    void get_argument_size(string raw_size, EnvArguments& env_arguments) {
+        regex pattern("^\\d{1,3}x\\d{1,3}$");
+        smatch match_info;
+
+        if (!regex_match(raw_size, match_info, pattern)) {
+            THROW_EXP_INVALID_SIZE(raw_size);
+        }
+        uint32_t w, h;
+
+        sscanf(raw_size.c_str(), "%ux%u", &w, &h);
+
+        if (1 > w || w > 255 || 1 > h || h > 255) {
+            THROW_EXP_INVALID_SIZE(raw_size);
+        }
+
+        env_arguments.size[0] = static_cast<uint8_t>(w);
+        env_arguments.size[1] = static_cast<uint8_t>(h);
+    }
+
+    bool assert_fps(string fps) {
+        
     }
 
     EnvArguments& get_env_arguments() {        
@@ -50,10 +79,7 @@ namespace env_arguments_ns {
         }
 
         if (raw_size != nullptr) {
-            uint8_t w, h;
-            sscanf(raw_size, "%hhux%hhu", &w, &h);
-            env_arguments.size[0] = w;
-            env_arguments.size[1] = h;
+            get_argument_size(raw_size, env_arguments);
         }
 
         return env_arguments;
