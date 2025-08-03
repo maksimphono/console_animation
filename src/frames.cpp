@@ -24,12 +24,11 @@ namespace frames_ns {
         this->hours = this->time / 3600000;
     }
 
-    Frame* pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
+    Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
         // TODO: make this multithreaded
         constexpr const char* pick_frame_command_template = "ffmpeg -loglevel -8 -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
         constexpr const char* convert_frame_command_template = "jp2a --size={0}x{1} {2}";
         string output = "";
-        Frame* frame = nullptr;
 
         if (check_path(TEMP_PATH))
             fs::remove(TEMP_PATH); // clear the temporary file
@@ -38,19 +37,15 @@ namespace frames_ns {
 
         if (!check_path(TEMP_PATH)) {
             THROW_CANT_CREATE_TEMP_DIR_EXP(TEMP_PATH);
-            return nullptr;
         }
 
         output = exec_command(format(convert_frame_command_template, size[0], size[1], TEMP_PATH));
 
         if (output.length() != (size[0] + 1) * size[1]) {
             THROW_JP2A_PROGRAM_ISSUE_EXP;
-            return nullptr;
         }
 
-        frame = new Frame(output, size);
-
-        return frame;
+        return Frame(output, size);
     }
 
     uint32_t get_video_duration(string& path) {
@@ -79,14 +74,14 @@ namespace frames_ns {
         if (!check_path(path)) return frames;
         uint16_t inc_ms = 1000 / fps;
         uint32_t duration = get_video_duration(path);
+        Timestamp ts(0,0,0,0);
         duration = (time_limit_sec * 1000 > duration)?duration:(time_limit_sec * 1000);
         duration -= duration % inc_ms;
-        Timestamp ts(0,0,1,0);
 
         frames.clear();
 
         while (ts.time < duration) {
-            frames.push_back(*pick_frame(path, ts, size));
+            frames.push_back(pick_frame(path, ts, size));
             ts.inc(inc_ms);
         }
 

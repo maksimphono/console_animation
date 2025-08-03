@@ -1,6 +1,6 @@
 #include <iostream>
-#include <string>    // For std::string
-#include <vector>    // For std::vector (to store lines of text)
+#include <string>
+#include <vector>
 #include <cstdint>
 
 #include "include/render.hpp"
