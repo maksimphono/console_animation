@@ -62,6 +62,7 @@
         "bitset": "cpp",
         "condition_variable": "cpp",
         "regex": "cpp",
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "map": "cpp"
     }
 }

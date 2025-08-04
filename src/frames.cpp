@@ -8,8 +8,10 @@
 #include "utils/TerminalRestorer.cpp"
 #include "utils/ThreadPool.cpp"
 
-using namespace std;
 namespace fs = std::filesystem;
+
+using namespace std;
+using ThreadPool = threadpool_ns::ThreadPool;
 
 #define TEMP_PATH "./.frames.deleteme"
 
@@ -29,11 +31,6 @@ namespace frames_ns {
         this->minutes = (this->time / 60000) % 60;
         this->hours = this->time / 3600000;
     }
-
-    typedef struct  {
-        Frame* frame;
-        uint32_t index;
-    } Frame_with_index_t;
 
     string Timestamp::to_string() {
         return format("{0}h{1}m{2}s{3}ms", this->hours, this->minutes, this->seconds, this->miliseconds);
