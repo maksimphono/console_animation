@@ -32,7 +32,12 @@ namespace frames_ns {
         string body = ""; // flat array, that contains all symbols of the frame
         uint8_t size[2] = {};
     public:
+        Frame() {}
         Frame(string& chars, uint8_t size[2]){
+            this->len = (uint16_t)(size[0] + 1) * (uint16_t)size[1];
+            this->body = string(chars);
+        }
+        void set(string& chars, uint8_t size[2]) {
             this->len = (uint16_t)(size[0] + 1) * (uint16_t)size[1];
             this->body = string(chars);
         }
@@ -50,11 +55,11 @@ namespace frames_ns {
         string to_string();
     };
 
-    Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]);
+    void pick_frame(Frame&, string& path, Timestamp& ts, uint8_t size[2]);
 
     uint32_t get_video_duration(string& path);
 
     void cleanup();
 
-    vector<Frame>& create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t);
+    vector<Frame> create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t);
 }

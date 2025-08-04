@@ -1,5 +1,6 @@
 #include <thread>
 #include <queue>
+#include <map>
 
 #include "utils/check_path.cpp"
 #include "utils/exec_command.cpp"
@@ -28,11 +29,16 @@ namespace frames_ns {
         this->hours = this->time / 3600000;
     }
 
+    typedef struct  {
+        Frame* frame;
+        uint32_t index;
+    } Frame_with_index_t;
+
     string Timestamp::to_string() {
         return format("{0}h{1}m{2}s{3}ms", this->hours, this->minutes, this->seconds, this->miliseconds);
     }
 
-    Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
+    void pick_frame(Frame& current_frame, string& path, Timestamp& ts, uint8_t size[2]) {
         // TODO: make this multithreaded
         constexpr const char* pick_frame_command_template = "ffmpeg -loglevel -8 -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
         constexpr const char* convert_frame_command_template = "jp2a --size={0}x{1} {2}";
@@ -56,7 +62,7 @@ namespace frames_ns {
 
         //fs::remove(temp_file_path);
 
-        return Frame(output, size);
+        return current_frame.set(output, size);
     }
 
     uint32_t get_video_duration(string& path) {
@@ -82,9 +88,7 @@ namespace frames_ns {
         }
     }
 
-    vector<Frame>& create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t time_limit_sec = 20) {
-        vector<Frame>& frames = _frames;
-
+    vector<Frame> create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t time_limit_sec = 20) {
         uint8_t logical_cores = std::thread::hardware_concurrency();
         TerminalRestorer restorer;
 
@@ -93,10 +97,15 @@ namespace frames_ns {
         Timestamp ts(0,0,0,0);
         duration = (time_limit_sec * 1000 > duration)?duration:(time_limit_sec * 1000);
         duration -= duration % inc_ms;
-        
-        queue<future<Frame>> futures;
+        uint32_t frames_len = duration / inc_ms;
 
-        frames.clear();
+        //map<uint32_t, Frame> frames;
+
+        Frame* frames = new Frame[frames_len];
+
+        queue<future<void>> futures;
+
+        //frames.clear();
 
         if (check_path(TEMP_PATH)) {
             cleanup();
@@ -104,14 +113,14 @@ namespace frames_ns {
             fs::create_directory(TEMP_PATH);
         }
 
-        while (ts.time < duration) {
+        for (uint32_t i = 0; i < frames_len && ts.time < duration; i++) {
             if (futures.size() >= logical_cores) {
                 while (!futures.empty()) {
-                    frames.push_back(futures.front().get());
+                    futures.front().wait();
                     futures.pop();
                 }
             }
-            futures.push(std::async(std::launch::async, pick_frame, std::ref(path), std::ref(ts), size));
+            futures.push(std::async(std::launch::async, pick_frame, std::ref(frames[i]), std::ref(path), std::ref(ts), size));
 
             //frames.push_back(pick_frame(path, ts, size));
 
@@ -119,12 +128,18 @@ namespace frames_ns {
         }
 
         while (!futures.empty()) {
-            frames.push_back(futures.front().get());
+            futures.front().wait();
             futures.pop();
         }
 
         //cleanup();
 
-        return frames;
+        vector<Frame> result;
+        for (uint32_t i = 0; i < frames_len; i++)
+            result.push_back(frames[i]);
+
+        delete[] frames;
+
+        return result;
     }
 }
