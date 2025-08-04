@@ -89,7 +89,9 @@ namespace frames_ns {
         }
     }
 
-    vector<Frame> create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t time_limit_sec = 20) {
+    vector<Frame>& create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t time_limit_sec = 20) {
+        vector<Frame>& frames = _frames;
+        
         uint8_t logical_cores = std::thread::hardware_concurrency();
         TerminalRestorer restorer;
 
@@ -99,15 +101,11 @@ namespace frames_ns {
         duration = (time_limit_sec * 1000 > duration)?duration:(time_limit_sec * 1000);
         duration -= duration % inc_ms;
         uint32_t frames_len = duration / inc_ms;
-        ThreadPool pool(8);
+        ThreadPool pool(std::thread::hardware_concurrency());
 
-        //map<uint32_t, Frame> frames;
+        queue<future<Frame>> futures;
 
-        Frame* frames = new Frame[frames_len];
-
-        vector<future<Frame>> futures;
-
-        //frames.clear();
+        frames.clear();
 
         if (check_path(TEMP_PATH)) {
             cleanup();
@@ -115,28 +113,21 @@ namespace frames_ns {
             fs::create_directory(TEMP_PATH);
         }
 
-        for (; ts.time < duration; ) {
+        while (ts.time < duration) {
             //futures.push(std::async(std::launch::async, pick_frame, std::ref(frames[i]), std::ref(path), std::ref(ts), size));
-            futures.push_back(pool.submit(pick_frame, path, ts, size));
+            futures.push(pool.submit(pick_frame, path, ts, size));
             //frames.push_back(pick_frame(path, ts, size));
 
             ts.inc(inc_ms);
         }
-/*
+
         while (!futures.empty()) {
-            futures.front().wait();
+            frames.push_back(futures.front().get());
             futures.pop();
-        }
-*/
-        vector<Frame> result;
-        for (int i = 0; i < futures.size(); i++) {
-            result.push_back(futures[i].get());
         }
 
         //cleanup();
 
-        delete[] frames;
-
-        return result;
+        return frames;
     }
 }

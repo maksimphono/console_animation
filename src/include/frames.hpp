@@ -61,5 +61,5 @@ namespace frames_ns {
 
     void cleanup();
 
-    vector<Frame> create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t);
+    vector<Frame>& create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t);
 }
