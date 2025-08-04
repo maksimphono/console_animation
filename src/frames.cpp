@@ -1,6 +1,10 @@
+#include <thread>
+#include <queue>
+
 #include "utils/check_path.cpp"
 #include "utils/exec_command.cpp"
 #include "include/frames.hpp"
+#include "utils/TerminalRestorer.cpp"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -28,7 +32,7 @@ namespace frames_ns {
         return format("{0}h{1}m{2}s{3}ms", this->hours, this->minutes, this->seconds, this->miliseconds);
     }
 
-    Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
+    Frame pick_frame(string path, Timestamp ts, uint8_t size[2]) {
         // TODO: make this multithreaded
         constexpr const char* pick_frame_command_template = "ffmpeg -loglevel -8 -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
         constexpr const char* convert_frame_command_template = "jp2a --size={0}x{1} {2}";
@@ -82,11 +86,16 @@ namespace frames_ns {
         vector<Frame>& frames = _frames;
 
         if (!check_path(path)) return frames;
+        uint8_t logical_cores = std::thread::hardware_concurrency();
+        TerminalRestorer restorer;
+
         uint16_t inc_ms = 1000 / fps;
         uint32_t duration = get_video_duration(path);
         Timestamp ts(0,0,0,0);
         duration = (time_limit_sec * 1000 > duration)?duration:(time_limit_sec * 1000);
         duration -= duration % inc_ms;
+        
+        queue<future<Frame>> futures;
 
         frames.clear();
 
@@ -96,9 +105,23 @@ namespace frames_ns {
             cleanup();
         }
 
-        while (ts.time < duration) {
-            frames.push_back(pick_frame(path, ts, size));
+        while (ts.time < duration) { // submitting execution of the 'pick_frame' calls
+            if (futures.size() >= logical_cores) {
+                while (!futures.empty()) {
+                    frames.push_back(futures.front().get());
+                    futures.pop();
+                }
+            }
+            futures.push(std::async(std::launch::async, pick_frame, path, ts, size));
+
+            //frames.push_back(pick_frame(path, ts, size));
+
             ts.inc(inc_ms);
+        }
+
+        while (!futures.empty()) {
+            frames.push_back(futures.front().get());
+            futures.pop();
         }
 
         //cleanup();
