@@ -47,7 +47,7 @@ namespace frames_ns {
         string temp_file_path = format("{0}/.frame_{1}.jpg", TEMP_PATH, ts.to_string());
 
         if (check_path(temp_file_path))
-            fs::remove(temp_file_path); // clear the temporary file
+            fs::remove(temp_file_path);
 
         exec_command(format(pick_frame_command_template, ts.hours, ts.minutes, ts.seconds, ts.miliseconds, path, temp_file_path));
 
@@ -60,8 +60,6 @@ namespace frames_ns {
         if (output.length() != (size[0] + 1) * size[1]) {
             THROW_JP2A_PROGRAM_ISSUE_EXP;
         }
-
-        //fs::remove(temp_file_path);
 
         return Frame(output, size);
     }
@@ -96,10 +94,9 @@ namespace frames_ns {
 
         uint16_t inc_ms = 1000 / fps;
         uint32_t duration = get_video_duration(path);
-        Timestamp ts(0,0,0,0);
         duration = (time_limit_sec * 1000 > duration)?duration:(time_limit_sec * 1000);
         duration -= duration % inc_ms;
-        uint32_t frames_len = duration / inc_ms;
+        Timestamp ts(0,0,0,0);
         ThreadPool pool(std::thread::hardware_concurrency());
 
         queue<future<Frame>> futures;
