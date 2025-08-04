@@ -32,7 +32,7 @@ namespace frames_ns {
         return format("{0}h{1}m{2}s{3}ms", this->hours, this->minutes, this->seconds, this->miliseconds);
     }
 
-    Frame pick_frame(string path, Timestamp ts, uint8_t size[2]) {
+    Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
         // TODO: make this multithreaded
         constexpr const char* pick_frame_command_template = "ffmpeg -loglevel -8 -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
         constexpr const char* convert_frame_command_template = "jp2a --size={0}x{1} {2}";
@@ -85,7 +85,6 @@ namespace frames_ns {
     vector<Frame>& create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t time_limit_sec = 20) {
         vector<Frame>& frames = _frames;
 
-        if (!check_path(path)) return frames;
         uint8_t logical_cores = std::thread::hardware_concurrency();
         TerminalRestorer restorer;
 
@@ -99,20 +98,20 @@ namespace frames_ns {
 
         frames.clear();
 
-        if (!check_path(TEMP_PATH)) {
-            fs::create_directory(TEMP_PATH);
-        } else {
+        if (check_path(TEMP_PATH)) {
             cleanup();
+        } else {
+            fs::create_directory(TEMP_PATH);
         }
 
-        while (ts.time < duration) { // submitting execution of the 'pick_frame' calls
+        while (ts.time < duration) {
             if (futures.size() >= logical_cores) {
                 while (!futures.empty()) {
                     frames.push_back(futures.front().get());
                     futures.pop();
                 }
             }
-            futures.push(std::async(std::launch::async, pick_frame, path, ts, size));
+            futures.push(std::async(std::launch::async, pick_frame, std::ref(path), std::ref(ts), size));
 
             //frames.push_back(pick_frame(path, ts, size));
 

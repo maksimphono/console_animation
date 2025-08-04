@@ -50,7 +50,7 @@ namespace frames_ns {
         string to_string();
     };
 
-    Frame pick_frame(string path, Timestamp ts, uint8_t size[2]);
+    Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]);
 
     uint32_t get_video_duration(string& path);
 
