@@ -92,7 +92,6 @@ namespace frames_ns {
     vector<Frame>& create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t time_limit_sec = 20) {
         vector<Frame>& frames = _frames;
         
-        uint8_t logical_cores = std::thread::hardware_concurrency();
         TerminalRestorer restorer;
 
         uint16_t inc_ms = 1000 / fps;
@@ -114,9 +113,7 @@ namespace frames_ns {
         }
 
         while (ts.time < duration) {
-            //futures.push(std::async(std::launch::async, pick_frame, std::ref(frames[i]), std::ref(path), std::ref(ts), size));
             futures.push(pool.submit(pick_frame, path, ts, size));
-            //frames.push_back(pick_frame(path, ts, size));
 
             ts.inc(inc_ms);
         }
