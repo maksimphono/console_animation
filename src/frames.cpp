@@ -6,6 +6,7 @@
 #include "utils/exec_command.cpp"
 #include "include/frames.hpp"
 #include "utils/TerminalRestorer.cpp"
+#include "utils/ThreadPool.cpp"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -38,7 +39,7 @@ namespace frames_ns {
         return format("{0}h{1}m{2}s{3}ms", this->hours, this->minutes, this->seconds, this->miliseconds);
     }
 
-    void pick_frame(Frame& current_frame, string& path, Timestamp& ts, uint8_t size[2]) {
+    Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
         // TODO: make this multithreaded
         constexpr const char* pick_frame_command_template = "ffmpeg -loglevel -8 -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
         constexpr const char* convert_frame_command_template = "jp2a --size={0}x{1} {2}";
@@ -62,7 +63,7 @@ namespace frames_ns {
 
         //fs::remove(temp_file_path);
 
-        return current_frame.set(output, size);
+        return Frame(output, size);
     }
 
     uint32_t get_video_duration(string& path) {
@@ -98,12 +99,13 @@ namespace frames_ns {
         duration = (time_limit_sec * 1000 > duration)?duration:(time_limit_sec * 1000);
         duration -= duration % inc_ms;
         uint32_t frames_len = duration / inc_ms;
+        ThreadPool pool(8);
 
         //map<uint32_t, Frame> frames;
 
         Frame* frames = new Frame[frames_len];
 
-        queue<future<void>> futures;
+        vector<future<Frame>> futures;
 
         //frames.clear();
 
@@ -113,30 +115,25 @@ namespace frames_ns {
             fs::create_directory(TEMP_PATH);
         }
 
-        for (uint32_t i = 0; i < frames_len && ts.time < duration; i++) {
-            if (futures.size() >= logical_cores) {
-                while (!futures.empty()) {
-                    futures.front().wait();
-                    futures.pop();
-                }
-            }
-            futures.push(std::async(std::launch::async, pick_frame, std::ref(frames[i]), std::ref(path), std::ref(ts), size));
-
+        for (; ts.time < duration; ) {
+            //futures.push(std::async(std::launch::async, pick_frame, std::ref(frames[i]), std::ref(path), std::ref(ts), size));
+            futures.push_back(pool.submit(pick_frame, path, ts, size));
             //frames.push_back(pick_frame(path, ts, size));
 
             ts.inc(inc_ms);
         }
-
+/*
         while (!futures.empty()) {
             futures.front().wait();
             futures.pop();
         }
+*/
+        vector<Frame> result;
+        for (int i = 0; i < futures.size(); i++) {
+            result.push_back(futures[i].get());
+        }
 
         //cleanup();
-
-        vector<Frame> result;
-        for (uint32_t i = 0; i < frames_len; i++)
-            result.push_back(frames[i]);
 
         delete[] frames;
 
