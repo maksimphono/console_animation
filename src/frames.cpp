@@ -1,7 +1,3 @@
-#include <thread>
-#include <queue>
-#include <map>
-
 #include "utils/check_path.cpp"
 #include "utils/exec_command.cpp"
 #include "include/frames.hpp"
@@ -22,6 +18,15 @@ namespace frames_ns {
     Timestamp::Timestamp(uint8_t h, uint8_t m, uint8_t s, uint16_t ms)
         : hours(h), minutes(m), seconds(s), miliseconds(ms) {
         this->time = this->miliseconds + (uint32_t)seconds * 1000 + (uint32_t)minutes * 60000 + (uint32_t)hours * 3600000;
+    }
+
+    Timestamp::Timestamp(uint32_t time_ms) {
+        this->time = time_ms;
+
+        this->miliseconds = this->time % 1000;
+        this->seconds = (this->time / 1000) % 60;
+        this->minutes = (this->time / 60000) % 60;
+        this->hours = this->time / 3600000;
     }
 
     void Timestamp::inc(uint16_t ms) {
@@ -85,17 +90,24 @@ namespace frames_ns {
         }
     }
 
-    vector<Frame>& create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t time[2]) {
+    vector<Frame>& create_frames_from_video(EnvArguments& arguments) {
         vector<Frame>& frames = _frames;
 
         TerminalRestorer restorer;
 
+        string& path = arguments.path;
+        uint8_t* size = arguments.size;
+        uint8_t fps = arguments.fps;
+        uint32_t* time = arguments.time;
+
         uint16_t inc_ms = 1000 / fps;
         uint32_t video_end_time = get_video_duration(path);
-        uint32_t video_start_time = (time[0] * 1000 > video_end_time)?(video_end_time - 2000):(time[0] * 1000);
+        uint32_t video_start_time = 0;
         video_end_time = (time[1] * 1000 > video_end_time)?video_end_time:(time[1] * 1000);
         video_end_time -= video_end_time % inc_ms;
-        Timestamp ts(0,0,time[0],0);
+        video_start_time = (time[0] * 1000 > video_end_time)?(video_end_time - 2000):(time[0] * 1000);
+
+        Timestamp ts(video_start_time);
         ThreadPool pool(std::thread::hardware_concurrency());
 
         queue<future<Frame>> futures;

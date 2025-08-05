@@ -78,8 +78,6 @@ namespace env_arguments_ns {
 
         env_arguments.time[0] = start;
         env_arguments.time[1] = end;
-
-        cout << env_arguments.time[0] << " " << env_arguments.time[1] << endl;
     }
 
     const char* get_env(const char* name){

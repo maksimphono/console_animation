@@ -9,9 +9,15 @@
 #include <vector>
 #include <future>
 
+#include <thread>
+#include <queue>
+#include <map>
+
+#include "./env_arguments.hpp"
 #include "./exception.hpp"
 
 using namespace std;
+using EnvArguments = env_arguments_ns::EnvArguments;
 
 #define THROW_CANT_CREATE_TEMP_DIR_EXP(path) \
     throw FramesException(format("Error, can't create temporary directory {0}.", path));
@@ -50,7 +56,8 @@ namespace frames_ns {
         uint8_t seconds; 
         uint16_t miliseconds;
         uint32_t time; // total time in miliseconds
-        Timestamp(uint8_t h = 0, uint8_t m = 0, uint8_t s = 0, uint16_t ms = 0);
+        Timestamp(uint8_t h, uint8_t m, uint8_t s, uint16_t ms);
+        Timestamp(uint32_t time_ms = 0);
         void inc(uint16_t ms);
         string to_string();
     };
@@ -61,5 +68,5 @@ namespace frames_ns {
 
     void cleanup();
 
-    vector<Frame>& create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t[2]);
+    vector<Frame>& create_frames_from_video(EnvArguments&);
 }
