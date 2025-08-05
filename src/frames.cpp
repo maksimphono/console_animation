@@ -14,6 +14,7 @@ using namespace std;
 using ThreadPool = threadpool_ns::ThreadPool;
 
 #define TEMP_PATH "./.frames.deleteme"
+#define min(a, b) (a < b)?a:b
 
 namespace frames_ns {
     vector<Frame> _frames; // array, that holds all the frames
@@ -84,16 +85,17 @@ namespace frames_ns {
         }
     }
 
-    vector<Frame>& create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t time_limit_sec = 20) {
+    vector<Frame>& create_frames_from_video(string& path, uint8_t size[2], uint8_t fps, uint32_t time[2]) {
         vector<Frame>& frames = _frames;
-        
+
         TerminalRestorer restorer;
 
         uint16_t inc_ms = 1000 / fps;
-        uint32_t duration = get_video_duration(path);
-        duration = (time_limit_sec * 1000 > duration)?duration:(time_limit_sec * 1000);
-        duration -= duration % inc_ms;
-        Timestamp ts(0,0,0,0);
+        uint32_t video_end_time = get_video_duration(path);
+        uint32_t video_start_time = (time[0] * 1000 > video_end_time)?(video_end_time - 2000):(time[0] * 1000);
+        video_end_time = (time[1] * 1000 > video_end_time)?video_end_time:(time[1] * 1000);
+        video_end_time -= video_end_time % inc_ms;
+        Timestamp ts(0,0,time[0],0);
         ThreadPool pool(std::thread::hardware_concurrency());
 
         queue<future<Frame>> futures;
@@ -106,7 +108,7 @@ namespace frames_ns {
             fs::create_directory(TEMP_PATH);
         }
 
-        while (ts.time < duration) {
+        while (ts.time < video_end_time) {
             futures.push(pool.submit(pick_frame, path, ts, size));
 
             ts.inc(inc_ms);

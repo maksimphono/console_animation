@@ -13,14 +13,16 @@ using namespace std;
 */
 
 #define DEFAULT_FPS 2
-#define DEFAULT_SZIE {55, 16}
+#define DEFAULT_SIZE {55, 16}
+#define DEFAULT_TIME {0, 10}
 
 namespace env_arguments_ns {
     typedef struct {
         // dedicated structure, that will store values of every arguments
         string path = "";
         uint8_t fps = DEFAULT_FPS; // frames per second
-        uint8_t size[2] = DEFAULT_SZIE; // default size
+        uint8_t size[2] = DEFAULT_SIZE; // default size
+        uint32_t time[2] = DEFAULT_TIME;
     } EnvArguments;
 
     void assert_path(string value);

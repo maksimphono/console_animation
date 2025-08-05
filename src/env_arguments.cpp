@@ -17,6 +17,9 @@ using namespace std;
 #define THROW_FPS_INVALID_EXP(fps) \
     throw ArgumentException(format("Sorry, can't accept fps value {0}. Make sure to specify fps value as integer 1 <= fps <= 20", fps))
 
+#define THROW_TIME_INVALID_EXP \
+    throw ArgumentException("Time argument wasn't specified correctly, time must be specified in form of 'S-E' where 0 <= S < E")
+
 namespace env_arguments_ns {
     EnvArguments env_arguments;
 
@@ -59,13 +62,41 @@ namespace env_arguments_ns {
 
             env_arguments.fps = static_cast<uint8_t>(fps);
     }
+    void get_argument_time(string raw_time, EnvArguments& env_arguments) {
+        uint32_t start, end;
+        regex pattern("^\\d+-\\d+$");
+        smatch match_info;
+
+        if (!regex_match(raw_time, match_info, pattern)) {
+            THROW_TIME_INVALID_EXP;
+        }
+
+        sscanf(raw_time.c_str(), "%u-%u", &start, &end);
+
+        if (start >= end)
+            THROW_TIME_INVALID_EXP;
+
+        env_arguments.time[0] = start;
+        env_arguments.time[1] = end;
+
+        cout << env_arguments.time[0] << " " << env_arguments.time[1] << endl;
+    }
+
+    const char* get_env(const char* name){
+        try {
+            return getenv(name);
+        } catch(std::exception& exp) {
+            return nullptr;
+        }
+    }
 
     EnvArguments& get_env_arguments() {        
         EnvArguments& env_arguments = env_arguments_ns::env_arguments;
 
-        const char* path = getenv("INPUT_PATH");
-        const char* raw_fps = getenv("FPS");
-        const char* raw_size = getenv("SIZE");
+        const char* path = get_env("INPUT_PATH");
+        const char* raw_fps = get_env("FPS");
+        const char* raw_size = get_env("SIZE");
+        const char* raw_time = get_env("TIME");
 
         if (path != nullptr) {
             assert_path(path);
@@ -78,6 +109,10 @@ namespace env_arguments_ns {
 
         if (raw_size != nullptr) {
             get_argument_size(raw_size, env_arguments);
+        }
+
+        if (raw_time != nullptr) {
+            get_argument_time(raw_time, env_arguments);
         }
 
         return env_arguments;
