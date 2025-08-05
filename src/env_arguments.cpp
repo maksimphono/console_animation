@@ -20,6 +20,8 @@ using namespace std;
 #define THROW_TIME_INVALID_EXP \
     throw ArgumentException("Time argument wasn't specified correctly, time must be specified in form of 'S-E' where 0 <= S < E")
 
+#define return_if_empty(str) if (str == "") return;
+
 namespace env_arguments_ns {
     EnvArguments env_arguments;
 
@@ -34,7 +36,15 @@ namespace env_arguments_ns {
         }
     }
 
-    void get_argument_size(string raw_size, EnvArguments& env_arguments) {
+    void EnvArguments::set_path(string raw_path) {
+        return_if_empty(raw_path);
+        assert_path(raw_path);
+
+        this->path = raw_path;
+    }
+
+    void EnvArguments::set_size(string raw_size) {
+        return_if_empty(raw_size);
         regex pattern("^\\d{1,3}x\\d{1,3}$");
         smatch match_info;
 
@@ -49,20 +59,23 @@ namespace env_arguments_ns {
             THROW_SIZE_INVALID_EXP(raw_size);
         }
 
-        env_arguments.size[0] = static_cast<uint8_t>(w);
-        env_arguments.size[1] = static_cast<uint8_t>(h);
+        this->size[0] = static_cast<uint8_t>(w);
+        this->size[1] = static_cast<uint8_t>(h);
     }
 
-    void get_argument_fps(string raw_fps, EnvArguments& env_arguments) {
-            int fps;
-            sscanf(raw_fps.c_str(), "%d", &fps);
+    void EnvArguments::set_fps(string raw_fps) {
+        return_if_empty(raw_fps);
+        int fps;
 
-            if (fps > 20 || fps < 1)
-                THROW_FPS_INVALID_EXP(fps);
+        sscanf(raw_fps.c_str(), "%d", &fps);
 
-            env_arguments.fps = static_cast<uint8_t>(fps);
+        if (fps > 20 || fps < 1)
+            THROW_FPS_INVALID_EXP(fps);
+
+        this->fps = static_cast<uint8_t>(fps);
     }
-    void get_argument_time(string raw_time, EnvArguments& env_arguments) {
+    void EnvArguments::set_time(string raw_time) {
+        return_if_empty(raw_time);
         uint32_t start, end;
         regex pattern("^\\d+-\\d+$");
         smatch match_info;
@@ -76,8 +89,8 @@ namespace env_arguments_ns {
         if (start >= end)
             THROW_TIME_INVALID_EXP;
 
-        env_arguments.time[0] = start;
-        env_arguments.time[1] = end;
+        this->time[0] = start;
+        this->time[1] = end;
     }
 
     const char* get_env(const char* name){
@@ -91,27 +104,10 @@ namespace env_arguments_ns {
     EnvArguments& get_env_arguments() {        
         EnvArguments& env_arguments = env_arguments_ns::env_arguments;
 
-        const char* path = get_env("INPUT_PATH");
-        const char* raw_fps = get_env("FPS");
-        const char* raw_size = get_env("SIZE");
-        const char* raw_time = get_env("TIME");
-
-        if (path != nullptr) {
-            assert_path(path);
-            env_arguments.path = string(path);
-        }
-
-        if (raw_fps != nullptr) {
-            get_argument_fps(raw_fps, env_arguments);
-        }
-
-        if (raw_size != nullptr) {
-            get_argument_size(raw_size, env_arguments);
-        }
-
-        if (raw_time != nullptr) {
-            get_argument_time(raw_time, env_arguments);
-        }
+        env_arguments.set_path(get_env("INPUT_PATH"));
+        env_arguments.set_fps(get_env("FPS"));
+        env_arguments.set_size(get_env("SIZE"));
+        env_arguments.set_time(get_env("TIME"));
 
         return env_arguments;
     }

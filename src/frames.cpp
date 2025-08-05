@@ -1,6 +1,6 @@
+#include "include/frames.hpp"
 #include "utils/check_path.cpp"
 #include "utils/exec_command.cpp"
-#include "include/frames.hpp"
 #include "utils/TerminalRestorer.cpp"
 #include "utils/ThreadPool.cpp"
 
