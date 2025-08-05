@@ -10,7 +10,6 @@ using namespace std;
 using ThreadPool = threadpool_ns::ThreadPool;
 
 #define TEMP_PATH "./.frames.deleteme"
-#define min(a, b) (a < b)?a:b
 
 namespace frames_ns {
     vector<Frame> _frames; // array, that holds all the frames
@@ -43,7 +42,6 @@ namespace frames_ns {
     }
 
     Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
-        // TODO: make this multithreaded
         constexpr const char* pick_frame_command_template = "ffmpeg -loglevel -8 -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
         constexpr const char* convert_frame_command_template = "jp2a --size={0}x{1} {2}";
         string output = "";
