@@ -95,13 +95,10 @@ namespace frames_ns {
 
         TerminalRestorer restorer;
 
-        string& path = arguments.path;
-        uint8_t* size = arguments.size;
-        uint8_t fps = arguments.fps;
         uint32_t* time = arguments.time;
 
-        uint16_t inc_ms = 1000 / fps;
-        uint32_t video_end_time = get_video_duration(path);
+        uint16_t inc_ms = 1000 / arguments.fps;
+        uint32_t video_end_time = get_video_duration(arguments.path);
         uint32_t video_start_time = 0;
         video_end_time = (time[1] * 1000 > video_end_time)?video_end_time:(time[1] * 1000);
         video_end_time -= video_end_time % inc_ms;
@@ -121,7 +118,7 @@ namespace frames_ns {
         }
 
         while (ts.time < video_end_time) {
-            futures.push(pool.submit(pick_frame, path, ts, size));
+            futures.push(pool.submit(pick_frame, arguments.path, ts, arguments.size));
 
             ts.inc(inc_ms);
         }
