@@ -41,47 +41,6 @@ namespace storage_ns {
         }
     };
 
-    class StorageReader : public ifstream {
-    private:
-        vector<string> data;
-    public:
-        StorageReader(string name) : ifstream(create_path(name)) {
-            //string raw_content = "";
-
-            //cout << raw_content;
-        }
-        ~StorageReader() {
-            this->close();
-        }
-        EnvArgsMap get_arguments() {
-            EnvArgsMap args;
-            if (!this->is_open()) return args;
-            uint32_t metadata_length = 0;
-            char* metadata_line = nullptr;
-            regex pattern("[^;]+=[^;]+");
-
-            for (char ch = '\0'; ch != '\n'; ch = this->get()) metadata_length++;
-            metadata_line = new char[metadata_length];
-
-            this->seekg(0);
-            this->getline(metadata_line, metadata_length);
-
-            string metadata_str(metadata_line);
-            delete[] metadata_line;
-
-            auto words_begin = std::sregex_iterator(metadata_str.begin(), metadata_str.end(), pattern);
-            auto words_end = std::sregex_iterator();
-
-            for (std::sregex_iterator i = words_begin; i != words_end; ++i) {
-                string str(i->str());
-                args[str.substr(0, str.find("="))] = str.substr(str.find("=") + 1);
-            }
-
-            return args;
-        }
-    };
-
-
     fs::path create_path(string& name) {
         return fs::path(storage_path + "/" + name);
     }

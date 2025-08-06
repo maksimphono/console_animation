@@ -93,7 +93,7 @@ namespace env_arguments_ns {
         this->time[1] = end;
     }
 
-    const char* get_env(const char* name){
+    const char* get_env(const char* name) {
         try {
             return getenv(name);
         } catch(std::exception& exp) {
@@ -103,6 +103,7 @@ namespace env_arguments_ns {
 
     EnvArguments& get_env_arguments() {
         EnvArguments& env_arguments = env_arguments_ns::env_arguments;
+        //StorageReader* reader = new StorageReader("qwerty2");
 
         env_arguments.set_path(get_env("INPUT_PATH"));
         env_arguments.set_fps(get_env("FPS"));

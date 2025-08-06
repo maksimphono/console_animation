@@ -21,9 +21,56 @@ namespace storage_ns {
 
     const string storage_path("./storage");
 
-    vector<string> list_all_files();
-
     fs::path create_path(string& name);
+
+    class StorageReader : public ifstream {
+    private:
+        vector<string> data;
+        EnvArgsMap env_args;
+    public:
+        StorageReader(string name) : ifstream(create_path(name)) {
+            //string raw_content = "";
+
+            //cout << raw_content;
+        }
+        ~StorageReader() {
+            this->close();
+        }
+        EnvArgsMap& get_arguments() {
+            EnvArgsMap& args = this->env_args;
+            if (!this->is_open()) return args;
+            uint32_t metadata_length = 0;
+            char* metadata_line = nullptr;
+            regex pattern("[^;]+=[^;]+");
+
+            for (char ch = '\0'; ch != '\n'; ch = this->get()) metadata_length++;
+            metadata_line = new char[metadata_length];
+
+            this->seekg(0);
+            this->getline(metadata_line, metadata_length);
+
+            string metadata_str(metadata_line);
+            delete[] metadata_line;
+
+            auto words_begin = std::sregex_iterator(metadata_str.begin(), metadata_str.end(), pattern);
+            auto words_end = std::sregex_iterator();
+
+            for (std::sregex_iterator i = words_begin; i != words_end; ++i) {
+                string str(i->str());
+                args[str.substr(0, str.find("="))] = str.substr(str.find("=") + 1);
+            }
+
+            return args;
+        }
+
+        const char* get_env(const char* name) {
+            if (this->env_args.empty())
+                this->get_arguments();
+            return this->env_args[string(name)].c_str();
+        }
+    };
+
+    vector<string> list_all_files();
 
     bool check_exsistance(string& name);
 

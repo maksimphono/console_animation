@@ -3,7 +3,11 @@
 #include <string>
 #include <cstdint>
 
+//#include "./storage.hpp"
+// TODO: fix problem with including storage.hpp (Can't be included and compiled properly)
+
 using namespace std;
+//using StorageReader = storage_ns::StorageReader;
 
 #define DEFAULT_FPS 2
 #define DEFAULT_SIZE {55, 16}
