@@ -58,7 +58,7 @@ namespace storage_ns {
             if (!this->is_open()) return args;
             uint32_t metadata_length = 0;
             char* metadata_line = nullptr;
-            regex pattern("[^;]+=[^;]+;");
+            regex pattern("[^;]+=[^;]+");
 
             for (char ch = '\0'; ch != '\n'; ch = this->get()) metadata_length++;
             metadata_line = new char[metadata_length];
@@ -73,9 +73,8 @@ namespace storage_ns {
             auto words_end = std::sregex_iterator();
 
             for (std::sregex_iterator i = words_begin; i != words_end; ++i) {
-                
-                
-                i->str();
+                string str(i->str());
+                args[str.substr(0, str.find("="))] = str.substr(str.find("=") + 1);
             }
 
             return args;
