@@ -1,4 +1,6 @@
 #include "include/storage.hpp"
+#include "include/frames.hpp"
+#include "include/env_arguments.hpp"
 
 namespace storage_ns {
     class StorageWriter : public ofstream {

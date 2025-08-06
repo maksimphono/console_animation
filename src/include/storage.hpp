@@ -7,8 +7,16 @@
 #include <map>
 #include <regex>
 
-#include "./frames.hpp"
-#include "./env_arguments.hpp"
+//#include "./frames.hpp"
+//#include "./env_arguments.hpp"
+
+namespace frames_ns {
+    class Frame;
+}
+
+namespace env_arguments_ns {
+    class EnvArguments;
+}
 
 using namespace std;
 using EnvArguments = env_arguments_ns::EnvArguments;

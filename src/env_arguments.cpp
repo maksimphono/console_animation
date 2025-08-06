@@ -4,6 +4,7 @@
 #include <format>
 
 #include "include/env_arguments.hpp"
+#include "include/storage.hpp"
 #include "include/exception.hpp"
 
 using namespace std;
@@ -93,9 +94,12 @@ namespace env_arguments_ns {
         this->time[1] = end;
     }
 
-    const char* get_env(const char* name) {
+    const char* get_env(const char* name, StorageReader* reader = nullptr) {
         try {
-            return getenv(name);
+            if (reader == nullptr)
+                return getenv(name);
+            else
+                return reader->get_env(name);
         } catch(std::exception& exp) {
             return nullptr;
         }
@@ -103,13 +107,14 @@ namespace env_arguments_ns {
 
     EnvArguments& get_env_arguments() {
         EnvArguments& env_arguments = env_arguments_ns::env_arguments;
-        //StorageReader* reader = new StorageReader("qwerty2");
+        StorageReader* reader = new StorageReader("qwerty2");
 
-        env_arguments.set_path(get_env("INPUT_PATH"));
-        env_arguments.set_fps(get_env("FPS"));
-        env_arguments.set_size(get_env("SIZE"));
-        env_arguments.set_time(get_env("TIME"));
+        env_arguments.set_path(get_env("INPUT_PATH", reader));
+        env_arguments.set_fps(get_env("FPS", reader));
+        env_arguments.set_size(get_env("SIZE", reader));
+        env_arguments.set_time(get_env("TIME", reader));
 
+        delete reader;
         return env_arguments;
     }
 }
