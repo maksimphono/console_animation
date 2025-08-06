@@ -20,7 +20,7 @@ using namespace std;
 #define THROW_TIME_INVALID_EXP \
     throw ArgumentException("Time argument wasn't specified correctly, time must be specified in form of 'S-E' where 0 <= S < E")
 
-#define return_if_empty(str) if (str == "") return;
+#define return_if_empty(str) if (str == "") return
 
 namespace env_arguments_ns {
     EnvArguments env_arguments;
@@ -101,7 +101,7 @@ namespace env_arguments_ns {
         }
     }
 
-    EnvArguments& get_env_arguments() {        
+    EnvArguments& get_env_arguments() {
         EnvArguments& env_arguments = env_arguments_ns::env_arguments;
 
         env_arguments.set_path(get_env("INPUT_PATH"));
