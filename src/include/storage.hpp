@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <map>
+#include <regex>
 
 #include "./frames.hpp"
 #include "./env_arguments.hpp"
@@ -15,6 +17,8 @@ using Frame = frames_ns::Frame;
 namespace fs = filesystem;
 
 namespace storage_ns {
+    typedef map<string, string> EnvArgsMap;
+
     const string storage_path("./storage");
 
     vector<string> list_all_files();
@@ -30,4 +34,6 @@ namespace storage_ns {
 
     vector<Frame> load_file(string& name, EnvArguments& arguments);
     // loads sequence of frames by a name from file, also must set arguments to specific values, written in the file
+
+    EnvArgsMap load_metadata(string name, EnvArguments& arguments);
 }

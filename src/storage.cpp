@@ -3,9 +3,7 @@
 namespace storage_ns {
     class StorageWriter : public ofstream {
     public:
-        StorageWriter(string name) : ofstream(create_path(name)) {
-            //this->open(create_path(name), fstream::out);
-        }
+        StorageWriter(string name) : ofstream(create_path(name)) {}
         ~StorageWriter() {
             this->close();
         }
@@ -43,6 +41,48 @@ namespace storage_ns {
         }
     };
 
+    class StorageReader : public ifstream {
+    private:
+        vector<string> data;
+    public:
+        StorageReader(string name) : ifstream(create_path(name)) {
+            //string raw_content = "";
+
+            //cout << raw_content;
+        }
+        ~StorageReader() {
+            this->close();
+        }
+        EnvArgsMap get_arguments() {
+            EnvArgsMap args;
+            if (!this->is_open()) return args;
+            uint32_t metadata_length = 0;
+            char* metadata_line = nullptr;
+            regex pattern("[^;]+=[^;]+;");
+
+            for (char ch = '\0'; ch != '\n'; ch = this->get()) metadata_length++;
+            metadata_line = new char[metadata_length];
+
+            this->seekg(0);
+            this->getline(metadata_line, metadata_length);
+
+            string metadata_str(metadata_line);
+            delete[] metadata_line;
+
+            auto words_begin = std::sregex_iterator(metadata_str.begin(), metadata_str.end(), pattern);
+            auto words_end = std::sregex_iterator();
+
+            for (std::sregex_iterator i = words_begin; i != words_end; ++i) {
+                
+                
+                i->str();
+            }
+
+            return args;
+        }
+    };
+
+
     fs::path create_path(string& name) {
         return fs::path(storage_path + "/" + name);
     }
@@ -66,5 +106,11 @@ namespace storage_ns {
 
         writer.write_metadata(arguments);
         writer.write_frames(frames);
+    }
+
+    EnvArgsMap load_metadata(string name, EnvArguments& args) {
+        StorageReader reader(name);
+
+        return reader.get_arguments();
     }
 }
