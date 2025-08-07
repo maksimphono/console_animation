@@ -15,11 +15,10 @@ int main() {
     try {
         //env_arguments_ns::EnvArguments& env_arguments = env_arguments_ns::get_env_arguments();        
         env_arguments_ns::EnvArguments env_arguments;
-        storage_ns::load_file("qwerty2", env_arguments);
+        vector<frames_ns::Frame> frames = storage_ns::load_file("fr_size-157x59_fps-5_time-0-5", env_arguments);
         //vector<frames_ns::Frame> frames = frames_ns::create_frames_from_video(env_arguments);
-        //storage_ns::save_file("qwerty2", frames, env_arguments);
-        //storage_ns::load_metadata("qwerty2", env_arguments);
-        //render_ns::render(frames, env_arguments.fps);
+        //storage_ns::save_file("fr_size-157x59_fps-5_time-0-5", frames, env_arguments);
+        render_ns::render(frames, env_arguments.fps);
     } catch (const exception& exp) {
         cerr << exp.what() << endl;
         return 1;

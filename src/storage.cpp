@@ -125,8 +125,8 @@ namespace storage_ns {
         StorageReader reader(name);
 
         reader.read_metadata(arguments);
-        reader.read_frames(arguments);
+        vector<Frame> frames = reader.read_frames(arguments);
 
-        return vector<Frame>();
+        return frames;
     }
 }
