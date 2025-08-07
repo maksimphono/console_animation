@@ -94,6 +94,10 @@ namespace env_arguments_ns {
         this->time[1] = end;
     }
 
+    void EnvArguments::set_name(string raw_name){
+        this->name = raw_name;
+    }
+
     const char* get_env(const char* name) {
         try {
             return getenv(name);
@@ -105,10 +109,15 @@ namespace env_arguments_ns {
     EnvArguments& get_env_arguments() {
         EnvArguments& env_arguments = env_arguments_ns::env_arguments;
 
-        env_arguments.set_path(get_env("INPUT_PATH"));
-        env_arguments.set_fps(get_env("FPS"));
-        env_arguments.set_size(get_env("SIZE"));
-        env_arguments.set_time(get_env("TIME"));
+        if (get_env("NAME")) {
+            env_arguments.loaded_from_file = true;
+            env_arguments.set_name(get_env("NAME"));
+        } else {
+            env_arguments.set_path(get_env("INPUT_PATH"));
+            env_arguments.set_fps(get_env("FPS"));
+            env_arguments.set_size(get_env("SIZE"));
+            env_arguments.set_time(get_env("TIME"));
+        }
 
         return env_arguments;
     }

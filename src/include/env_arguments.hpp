@@ -20,10 +20,12 @@ namespace env_arguments_ns {
     class EnvArguments {
     public:
         // dedicated structure, that will store values of every arguments
+        string name = "";
         string path = "";
         uint8_t fps = DEFAULT_FPS; // frames per second
         uint8_t size[2] = DEFAULT_SIZE; // default size
         uint32_t time[2] = DEFAULT_TIME;
+        bool loaded_from_file = false;
 
         EnvArguments() {}
 
@@ -31,6 +33,7 @@ namespace env_arguments_ns {
         void set_size(string raw_size);
         void set_fps(string raw_fps);
         void set_time(string time);
+        void set_name(string name);
     };
 
     void assert_path(string value);
