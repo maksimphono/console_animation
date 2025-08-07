@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <filesystem>
 #include <string>
 #include <vector>
@@ -44,38 +45,9 @@ namespace storage_ns {
         ~StorageReader() {
             this->close();
         }
-        EnvArgsMap& get_arguments() {
-            EnvArgsMap& args = this->env_args;
-            if (!this->is_open()) return args;
-            uint32_t metadata_length = 0;
-            char* metadata_line = nullptr;
-            regex pattern("[^;]+=[^;]+");
+        EnvArguments& read_metadata(EnvArguments& arguments);
 
-            for (char ch = '\0'; ch != '\n'; ch = this->get()) metadata_length++;
-            metadata_line = new char[metadata_length];
-
-            this->seekg(0);
-            this->getline(metadata_line, metadata_length);
-
-            string metadata_str(metadata_line);
-            delete[] metadata_line;
-
-            auto words_begin = std::sregex_iterator(metadata_str.begin(), metadata_str.end(), pattern);
-            auto words_end = std::sregex_iterator();
-
-            for (std::sregex_iterator i = words_begin; i != words_end; ++i) {
-                string str(i->str());
-                args[str.substr(0, str.find("="))] = str.substr(str.find("=") + 1);
-            }
-
-            return args;
-        }
-
-        const char* get_env(const char* name) {
-            if (this->env_args.empty())
-                this->get_arguments();
-            return this->env_args[string(name)].c_str();
-        }
+        vector<Frame> read_frames(EnvArguments& arguments);
     };
 
     vector<string> list_all_files();
@@ -87,7 +59,7 @@ namespace storage_ns {
     void save_file(string name, vector<Frame>& frames, EnvArguments& arguments);
     // saves the sequence of frames along with specific arguments to a new file
 
-    vector<Frame> load_file(string& name, EnvArguments& arguments);
+    vector<Frame> load_file(string name, EnvArguments& arguments);
     // loads sequence of frames by a name from file, also must set arguments to specific values, written in the file
 
     EnvArgsMap load_metadata(string name, EnvArguments& arguments);

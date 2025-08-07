@@ -43,6 +43,53 @@ namespace storage_ns {
         }
     };
 
+    EnvArguments& StorageReader::read_metadata(EnvArguments& arguments) {
+        if (!this->is_open()) return arguments;
+
+        uint32_t metadata_length = 0;
+        char* metadata_line = nullptr;
+        regex pattern("[^;]+=[^;]+");
+        map<string, string> raw_arguments;
+
+        for (char ch = '\0'; ch != '\n'; ch = this->get()) metadata_length++;
+        metadata_line = new char[metadata_length];
+
+        this->seekg(0);
+        this->getline(metadata_line, metadata_length);
+
+        string metadata_str(metadata_line);
+        delete[] metadata_line;
+
+        auto words_begin = std::sregex_iterator(metadata_str.begin(), metadata_str.end(), pattern);
+        auto words_end = std::sregex_iterator();
+
+        for (std::sregex_iterator i = words_begin; i != words_end; ++i) {
+            string str(i->str());
+            raw_arguments[str.substr(0, str.find("="))] = str.substr(str.find("=") + 1);
+        }
+
+        arguments.set_fps(raw_arguments["FPS"]);
+        arguments.set_size(raw_arguments["SIZE"]);
+        arguments.set_time(raw_arguments["TIME"]);
+
+        return arguments;
+    }
+
+    vector<Frame> StorageReader::read_frames(EnvArguments& arguments) {
+        vector<Frame> frames;
+        uint32_t frame_length = (arguments.size[0] + 1) * arguments.size[1];
+        this->seekg(0);
+        this->ignore(0xffffffff, '\n');
+        char* bufer = new char[frame_length];
+        string frame_string = "";
+        this->read(bufer, frame_length);
+        string s(bufer);
+        cout << s;
+        //frames.push_back(Frame(bufer, arguments.size));
+        delete[] bufer;
+        return frames;
+    }
+
     fs::path create_path(string& name) {
         return fs::path(storage_path + "/" + name);
     }
@@ -68,9 +115,13 @@ namespace storage_ns {
         writer.write_frames(frames);
     }
 
-    EnvArgsMap load_metadata(string name, EnvArguments& args) {
+    vector<Frame> load_file(string name, EnvArguments& arguments) {
         StorageReader reader(name);
 
-        return reader.get_arguments();
+        reader.read_metadata(arguments);
+
+        //reader.read_frames();
+
+        return vector<Frame>();
     }
 }
