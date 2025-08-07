@@ -7,7 +7,7 @@
 #include "include/render.hpp"
 //#include "include/storage.hpp"
 #include "include/env_arguments.hpp"
-//#include "include/storage.hpp"
+#include "include/storage.hpp"
 
 using namespace std;
 
