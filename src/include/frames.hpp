@@ -73,4 +73,6 @@ namespace frames_ns {
     void cleanup();
 
     vector<Frame>& create_frames_from_video(EnvArguments&);
+
+    vector<Frame>& create_frames(EnvArguments&);
 }

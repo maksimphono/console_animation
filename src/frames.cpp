@@ -4,6 +4,8 @@
 #include "utils/TerminalRestorer.cpp"
 #include "utils/ThreadPool.cpp"
 
+#include "include/storage.hpp"
+
 namespace fs = std::filesystem;
 
 using namespace std;
@@ -129,5 +131,16 @@ namespace frames_ns {
         //cleanup();
 
         return frames;
+    }
+
+    vector<Frame>& create_frames(EnvArguments& arguments) {
+        vector<Frame>& frames = _frames;
+
+        if (arguments.loaded_from_file) {
+            frames = storage_ns::load_file(arguments.name, arguments);
+            return frames;
+        } else {
+            return create_frames_from_video(arguments);
+        }
     }
 }
