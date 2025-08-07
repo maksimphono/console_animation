@@ -33,7 +33,7 @@ namespace storage_ns {
     fs::path create_path(string& name);
 
     class StorageReader : public ifstream {
-    private:
+    protected:
         vector<string> data;
         EnvArgsMap env_args;
 

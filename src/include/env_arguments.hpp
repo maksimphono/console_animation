@@ -4,11 +4,11 @@
 #include <cstdint>
 
 namespace storage_ns {
-    class StorageReader;
+    class StorageReaderAdapter;
 }
 
 using namespace std;
-using StorageReader = storage_ns::StorageReader;
+using StorageReaderAdapter = storage_ns::StorageReaderAdapter;
 
 #define DEFAULT_FPS 2
 #define DEFAULT_SIZE {55, 16}
