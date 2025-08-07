@@ -78,15 +78,21 @@ namespace storage_ns {
     vector<Frame> StorageReader::read_frames(EnvArguments& arguments) {
         vector<Frame> frames;
         uint32_t frame_length = (arguments.size[0] + 1) * arguments.size[1];
+
         this->seekg(0);
         this->ignore(0xffffffff, '\n');
-        char* bufer = new char[frame_length];
+        char* buffer = new char[frame_length + 1];
         string frame_string = "";
-        this->read(bufer, frame_length);
-        string s(bufer);
-        cout << s;
-        //frames.push_back(Frame(bufer, arguments.size));
-        delete[] bufer;
+
+        while (!this->eof()) {
+            this->read(buffer, frame_length);
+            buffer[frame_length] = '\0';
+
+            frame_string = string(buffer);
+            frames.push_back(Frame(frame_string, arguments.size));
+        }
+
+        delete[] buffer;
         return frames;
     }
 
@@ -119,8 +125,7 @@ namespace storage_ns {
         StorageReader reader(name);
 
         reader.read_metadata(arguments);
-
-        //reader.read_frames();
+        reader.read_frames(arguments);
 
         return vector<Frame>();
     }

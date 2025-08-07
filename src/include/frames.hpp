@@ -43,6 +43,10 @@ namespace frames_ns {
             this->len = (uint16_t)(size[0] + 1) * (uint16_t)size[1];
             this->body = string(chars);
         }
+        Frame(char* chars, uint8_t size[2]){
+            this->len = (uint16_t)(size[0] + 1) * (uint16_t)size[1];
+            this->body = string(chars);
+        }
         void set(string& chars, uint8_t size[2]) {
             this->len = (uint16_t)(size[0] + 1) * (uint16_t)size[1];
             this->body = string(chars);
