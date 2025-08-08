@@ -3,11 +3,9 @@
 #include <string>
 #include <cstdint>
 
-//#include "./storage.hpp"
 namespace storage_ns {
     class StorageReader;
 }
-// TODO: fix problem with including storage.hpp (Can't be included and compiled properly)
 
 using namespace std;
 using StorageReader = storage_ns::StorageReader;

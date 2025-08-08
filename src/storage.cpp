@@ -43,13 +43,9 @@ namespace storage_ns {
         }
     };
 
-    EnvArguments& StorageReader::read_metadata(EnvArguments& arguments) {
-        if (!this->is_open()) return arguments;
-
+    string StorageReader::read_metadata_line() {
         uint32_t metadata_length = 0;
         char* metadata_line = nullptr;
-        regex pattern("[^;]+=[^;]+");
-        map<string, string> raw_arguments;
 
         for (char ch = '\0'; ch != '\n'; ch = this->get()) metadata_length++;
         metadata_line = new char[metadata_length];
@@ -59,6 +55,16 @@ namespace storage_ns {
 
         string metadata_str(metadata_line);
         delete[] metadata_line;
+
+        return metadata_str;
+    }
+
+    EnvArguments& StorageReader::read_metadata(EnvArguments& arguments) {
+        if (!this->is_open()) return arguments;
+
+        string metadata_str = this->read_metadata_line();
+        regex pattern("[^;]+=[^;]+");
+        map<string, string> raw_arguments;
 
         auto words_begin = std::sregex_iterator(metadata_str.begin(), metadata_str.end(), pattern);
         auto words_end = std::sregex_iterator();

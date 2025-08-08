@@ -109,7 +109,7 @@ namespace env_arguments_ns {
     EnvArguments& get_env_arguments() {
         EnvArguments& env_arguments = env_arguments_ns::env_arguments;
 
-        if (get_env("NAME")) {
+        if (get_env("NAME") != nullptr && get_env("NAME") != "") {
             env_arguments.loaded_from_file = true;
             env_arguments.set_name(get_env("NAME"));
         } else {

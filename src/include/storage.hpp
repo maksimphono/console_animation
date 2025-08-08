@@ -36,15 +36,13 @@ namespace storage_ns {
     private:
         vector<string> data;
         EnvArgsMap env_args;
-    public:
-        StorageReader(string name) : ifstream(create_path(name)) {
-            //string raw_content = "";
 
-            //cout << raw_content;
-        }
+        string read_metadata_line();
+    public:
+        StorageReader(string name) : ifstream(create_path(name)) {}
         ~StorageReader() {
             this->close();
-        }
+        }        
         EnvArguments& read_metadata(EnvArguments& arguments);
 
         vector<Frame> read_frames(EnvArguments& arguments);
@@ -61,6 +59,4 @@ namespace storage_ns {
 
     vector<Frame> load_file(string name, EnvArguments& arguments);
     // loads sequence of frames by a name from file, also must set arguments to specific values, written in the file
-
-    EnvArgsMap load_metadata(string name, EnvArguments& arguments);
 }
