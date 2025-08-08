@@ -54,7 +54,7 @@ namespace storage_ns {
 
     void write_meta_data(ofstream& file, string& name, EnvArguments& arguments);
 
-    void save_file(string name, vector<Frame>& frames, EnvArguments& arguments);
+    uint32_t save_file(string name, vector<Frame>& frames, EnvArguments& arguments);
     // saves the sequence of frames along with specific arguments to a new file
 
     vector<Frame> load_file(string name, EnvArguments& arguments);

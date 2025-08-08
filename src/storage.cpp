@@ -106,7 +106,8 @@ namespace storage_ns {
         return fs::path(storage_path + "/" + name);
     }
 
-    bool check_existance(string& name) {
+
+    bool check_exsistance(string& name) {
         return fs::exists(create_path(name));
     }
 
@@ -120,11 +121,11 @@ namespace storage_ns {
         return files;
     }
 
-    void save_file(string name, vector<Frame>& frames, EnvArguments& arguments) {
+    uint32_t save_file(string name, vector<Frame>& frames, EnvArguments& arguments) {
         StorageWriter writer(name);
 
         writer.write_metadata(arguments);
-        writer.write_frames(frames);
+        return writer.write_frames(frames);
     }
 
     vector<Frame> load_file(string name, EnvArguments& arguments) {

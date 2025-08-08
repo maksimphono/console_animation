@@ -18,7 +18,7 @@ int main() {
         vector<frames_ns::Frame> frames = frames_ns::create_frames(env_arguments);
         //vector<frames_ns::Frame> frames = frames_ns::create_frames_from_video(env_arguments);
         //storage_ns::save_file("fr_size-157x59_fps-5_time-0-5", frames, env_arguments);
-        render_ns::render(frames, env_arguments.fps);
+        render_ns::render(frames, env_arguments);
     } catch (const exception& exp) {
         cerr << exp.what() << endl;
         return 1;
