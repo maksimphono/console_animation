@@ -10,60 +10,63 @@ namespace render_ns {
         std::this_thread::sleep_for(std::chrono::milliseconds(ms)); // sleep for 500 milliseconds
     }
 
-    void process_file_saving(vector<Frame> frames, EnvArguments& arguments) {
+    void process_file_saving(vector<Frame>& frames, EnvArguments& arguments) {
         string name = "";
         string answer = "";
-        cout << "Input a name to save the file:" << endl;
+
+        auto save_file = [&name, &frames, &arguments]() {
+            if (storage_ns::save_file(name, frames, arguments) == frames.size()) {
+                cout << format("File '{0}' saved successfully!", name) << endl;
+            } else {
+                // throw error
+            }
+        };
 
         for (;;) {
+            cout << "Input a name to save the file:" << endl;
             cin >> name;
 
             if (name == "") {
-                cout << "Sorry, did you pressed ENTER by accident? Input at leat one symbol:" << endl;
+                cout << "Input at leat one symbol!" << endl;
             } else if (storage_ns::check_exsistance(name)) {
+
                 cout << format("File with name '{0}' already exist, do you want to override it?\n[Y/n]: ", name);
                 cin >> answer;
+
                 if (answer == "y" || answer == "Y") {
-                    if (storage_ns::save_file(name, frames, arguments) == frames.size()) {
-                        cout << format("File '{0}' saved successfully!", name) << endl;
-                        break;
-                    } else {
-                        // throw error
-                    }
-                } else {
-                    cout << format("File '{0}' wasn't saved.", name) << endl;
-                    cout << "Input a name to save the file:" << endl;
-                }
-            } else {
-                if (storage_ns::save_file(name, frames, arguments) == frames.size()) {
-                    cout << format("File '{0}' saved successfully!", name) << endl;
+                    save_file();
                     break;
                 } else {
-                    // throw error
+                    cout << format("File '{0}' wasn't saved.", name) << endl;
                 }
-            }
-        }
-    }
 
-    void process_key(char ch, State& state) {
-        switch(ch) {
-            case 'q':
-            case 'Q':
-                state = BREAK;
-                return;
-            case 's':
-                // save file
-                state =  FILE_SAVING;
-                return;
-            default:
-                state = NORMAL;
-                return;
+            } else {
+                save_file();
+                break;
+            }
         }
     }
 
     void render(vector<frames_ns::Frame> frames, EnvArguments& arguments) {
         State state = NORMAL;
         uint8_t fps = arguments.fps;
+
+        auto process_key = [&state](char ch) {
+            switch(ch) {
+                case 'q':
+                case 'Q':
+                    state = BREAK;
+                    return;
+                case 's':
+                    // save file
+                    state =  FILE_SAVING;
+                    return;
+                default:
+                    state = NORMAL;
+                    return;
+            }
+        };
+
         initscr();
         noecho(); // turn off automatic echoing of typed characters
         cbreak(); // make characters available to the program as soon as they are typed
@@ -79,7 +82,7 @@ namespace render_ns {
         while (true) {
             ch = getch();
 
-            process_key(ch, state);
+            process_key(ch);
 
             if (state != NORMAL) {
                 break;
