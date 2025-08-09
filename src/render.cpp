@@ -1,5 +1,6 @@
 #include "include/storage.hpp"
 #include "include/render.hpp"
+//#include "utils/TerminalRestorer.cpp"
 
 using namespace std;
 
@@ -14,6 +15,8 @@ namespace render_ns {
         string name = "";
         string answer = "";
 
+        auto handle_resize = [](int signum) {};
+
         auto save_file = [&name, &frames, &arguments]() {
             if (storage_ns::save_file(name, frames, arguments) == frames.size()) {
                 cout << format("File '{0}' saved successfully!", name) << endl;
@@ -22,12 +25,13 @@ namespace render_ns {
             }
         };
 
+        signal(SIGWINCH, handle_resize);
         for (;;) {
             cout << "Input a name to save the file:" << endl;
             cin >> name;
 
             if (name == "") {
-                cout << "Input at leat one symbol!" << endl;
+                cout << "Sorry, can't save smpty string, input at leat one symbol!" << endl;
             } else if (storage_ns::check_exsistance(name)) {
 
                 cout << format("File with name '{0}' already exist, do you want to override it?\n[Y/n]: ", name);

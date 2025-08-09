@@ -5,6 +5,8 @@
 #include <chrono>
 #include <thread>
 #include <cstdint>
+#include <csignal>
+#include <unistd.h>
 
 #include "frames.hpp"
 
