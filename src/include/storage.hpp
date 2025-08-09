@@ -1,5 +1,6 @@
 #pragma once
 
+#include <format>
 #include <iostream>
 #include <filesystem>
 #include <string>
@@ -10,6 +11,7 @@
 
 //#include "./frames.hpp"
 //#include "./env_arguments.hpp"
+#include "./exception.hpp"
 
 namespace frames_ns {
     class Frame;
@@ -25,9 +27,12 @@ using Frame = frames_ns::Frame;
 
 namespace fs = filesystem;
 
-namespace storage_ns {
-    typedef map<string, string> EnvArgsMap;
+#define THROW_FILE_NOT_FOUND_EXP(name) \
+    throw StorageException("Sorry, file with this name wasn't found. Did you spell it correctly?")
 
+namespace storage_ns {
+    DEFINE_EXCEPTION_CLASS(StorageException, "Unknown error occured with storage!");
+    
     const string storage_path("./storage");
 
     fs::path create_path(string& name);
@@ -35,7 +40,6 @@ namespace storage_ns {
     class StorageReader : public ifstream {
     protected:
         vector<string> data;
-        EnvArgsMap env_args;
 
         string read_metadata_line();
     public:

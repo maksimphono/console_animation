@@ -128,6 +128,10 @@ namespace storage_ns {
     }
 
     vector<Frame> load_file(string name, EnvArguments& arguments) {
+        if (name == "" || check_exsistance(name) == false) {
+            THROW_FILE_NOT_FOUND_EXP(name);
+        }
+
         StorageReader reader(name);
 
         reader.read_metadata(arguments);
