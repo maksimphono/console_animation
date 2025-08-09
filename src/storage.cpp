@@ -21,7 +21,6 @@ namespace storage_ns {
             if (!this->is_open()) return 0;
             this->seekp(0);
 
-            n += this->write_entry("INPUT_PATH", arguments.path);
             n += this->write_entry<int>("FPS", (int)arguments.fps);
             n += this->write_entry("SIZE", format("{0}x{1}", arguments.size[0], arguments.size[1]));
             n += this->write_entry("TIME", format("{0}-{1}", arguments.time[0], arguments.time[1]));

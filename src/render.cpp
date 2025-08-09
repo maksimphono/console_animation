@@ -21,7 +21,7 @@ namespace render_ns {
             if (storage_ns::save_file(name, frames, arguments) == frames.size()) {
                 cout << format("File '{0}' saved successfully!", name) << endl;
             } else {
-                // throw error
+                throw StorageSaveException();
             }
         };
 
@@ -62,7 +62,6 @@ namespace render_ns {
                     state = BREAK;
                     return;
                 case 's':
-                    // save file
                     state =  FILE_SAVING;
                     return;
                 default:
