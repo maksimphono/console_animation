@@ -3,44 +3,37 @@
 #include "include/env_arguments.hpp"
 
 namespace storage_ns {
-    class StorageWriter : public ofstream {
-    public:
-        StorageWriter(string name) : ofstream(create_path(name)) {}
-        ~StorageWriter() {
-            this->close();
+
+    template <typename T = string>
+    uint32_t StorageWriter::write_entry(const char* name, T value) {
+        *this << name << "=" << value << ";";
+        return 1;
+    }
+
+    uint32_t StorageWriter::write_metadata(EnvArguments& arguments) {
+        // returns number of items written
+        uint32_t n = 0;
+        if (!this->is_open()) return 0;
+
+        this->seekp(0);
+        n += this->write_entry<int>("FPS", (int)arguments.fps);
+        n += this->write_entry("SIZE", format("{0}x{1}", arguments.size[0], arguments.size[1]));
+        n += this->write_entry("TIME", format("{0}-{1}", arguments.time[0], arguments.time[1]));
+
+        *this << endl;
+        return n;
+    }
+
+    uint32_t StorageWriter::write_frames(vector<Frame>& frames) {
+        // returns number of frames written
+        uint32_t n = 0;
+
+        for (auto& frame : frames) {
+            *this << frame.body;
+            n++;
         }
-        template <typename T = string>
-        uint32_t write_entry(const char* name, T value) {
-            *this << name << "=" << value << ";";
-            return 1;
-        }
-
-        uint32_t write_metadata(EnvArguments& arguments) {
-            // returns number of items written
-            uint32_t n = 0;
-            if (!this->is_open()) return 0;
-            this->seekp(0);
-
-            n += this->write_entry<int>("FPS", (int)arguments.fps);
-            n += this->write_entry("SIZE", format("{0}x{1}", arguments.size[0], arguments.size[1]));
-            n += this->write_entry("TIME", format("{0}-{1}", arguments.time[0], arguments.time[1]));
-
-            *this << endl;
-
-            return n;
-        }
-        uint32_t write_frames(vector<Frame>& frames) {
-            // returns number of frames written
-            uint32_t n = 0;
-
-            for (auto& frame : frames) {
-                *this << frame.body;
-                n++;
-            }
-
-            return n;
-        }
-    };
+        return n;
+    }
 
     string StorageReader::read_metadata_line() {
         uint32_t metadata_length = 0;
@@ -104,7 +97,6 @@ namespace storage_ns {
     fs::path create_path(string& name) {
         return fs::path(storage_path + "/" + name);
     }
-
 
     bool check_exsistance(string& name) {
         return fs::exists(create_path(name));

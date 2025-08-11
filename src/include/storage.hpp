@@ -37,6 +37,24 @@ namespace storage_ns {
 
     fs::path create_path(string& name);
 
+    class StorageWriter : public ofstream {
+    public:
+        StorageWriter(string name) : ofstream(create_path(name)) {}
+        ~StorageWriter() {
+            this->close();
+        }
+
+        template <typename T>
+        uint32_t write_entry(const char* name, T value);
+
+        uint32_t write_metadata(EnvArguments& arguments);
+        // returns number of items written
+
+        uint32_t write_frames(vector<Frame>& frames);
+        // returns number of frames written
+    };
+
+
     class StorageReader : public ifstream {
     protected:
         vector<string> data;
