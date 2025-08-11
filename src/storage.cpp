@@ -5,7 +5,7 @@
 namespace storage_ns {
 
     template <typename T = string>
-    uint32_t StorageWriter::write_entry(const char* name, T value) {
+    uint32_t StorageWriter::write_metadata_entry(const char* name, T value) {
         *this << name << "=" << value << ";";
         return 1;
     }
@@ -16,9 +16,9 @@ namespace storage_ns {
         if (!this->is_open()) return 0;
 
         this->seekp(0);
-        n += this->write_entry<int>("FPS", (int)arguments.fps);
-        n += this->write_entry("SIZE", format("{0}x{1}", arguments.size[0], arguments.size[1]));
-        n += this->write_entry("TIME", format("{0}-{1}", arguments.time[0], arguments.time[1]));
+        n += this->write_metadata_entry<int>("FPS", (int)arguments.fps);
+        n += this->write_metadata_entry("SIZE", format("{0}x{1}", arguments.size[0], arguments.size[1]));
+        n += this->write_metadata_entry("TIME", format("{0}-{1}", arguments.time[0], arguments.time[1]));
 
         *this << endl;
         return n;
@@ -102,14 +102,10 @@ namespace storage_ns {
         return fs::exists(create_path(name));
     }
 
-    vector<string> list_all_files() {
-        vector<string> files;
-
+    void list_all_files(ostream& stream, string separator) {
         for (auto file = fs::directory_iterator(storage_path); file != fs::directory_iterator(); file++) {
-            files.push_back(file->path().filename());
+            stream << file->path().filename() << separator;
         }
-
-        return files;
     }
 
     uint32_t save_file(string name, vector<Frame>& frames, EnvArguments& arguments) {

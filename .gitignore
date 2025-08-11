@@ -3,3 +3,4 @@ build
 Notes
 UML
 *.mp4
+.devcontainer/*

@@ -8,6 +8,7 @@
 #include <fstream>
 #include <map>
 #include <regex>
+#include <ostream>
 
 //#include "./frames.hpp"
 //#include "./env_arguments.hpp"
@@ -38,14 +39,14 @@ namespace storage_ns {
     fs::path create_path(string& name);
 
     class StorageWriter : public ofstream {
+    protected:
+        template <typename T>
+        uint32_t write_metadata_entry(const char* name, T value);
     public:
         StorageWriter(string name) : ofstream(create_path(name)) {}
         ~StorageWriter() {
             this->close();
         }
-
-        template <typename T>
-        uint32_t write_entry(const char* name, T value);
 
         uint32_t write_metadata(EnvArguments& arguments);
         // returns number of items written
@@ -57,8 +58,6 @@ namespace storage_ns {
 
     class StorageReader : public ifstream {
     protected:
-        vector<string> data;
-
         string read_metadata_line();
     public:
         StorageReader(string name) : ifstream(create_path(name)) {}
@@ -70,7 +69,7 @@ namespace storage_ns {
         vector<Frame> read_frames(EnvArguments& arguments);
     };
 
-    vector<string> list_all_files();
+    void list_all_files(ostream& stream = std::cout, string separator = "\n");
 
     bool check_exsistance(string& name);
 

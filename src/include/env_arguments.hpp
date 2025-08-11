@@ -24,6 +24,7 @@ namespace env_arguments_ns {
         uint8_t size[2] = DEFAULT_SIZE; // default size
         uint32_t time[2] = DEFAULT_TIME;
         bool loaded_from_file = false;
+        bool list_stored_files = false;
 
         EnvArguments() {}
 

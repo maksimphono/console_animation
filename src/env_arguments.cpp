@@ -2,6 +2,7 @@
 #include <regex>
 #include <exception>
 #include <format>
+#include <cstring>
 
 #include "include/env_arguments.hpp"
 #include "include/storage.hpp"
@@ -109,7 +110,10 @@ namespace env_arguments_ns {
     EnvArguments& get_env_arguments() {
         EnvArguments& env_arguments = env_arguments_ns::env_arguments;
 
-        if (get_env("NAME") != nullptr && get_env("NAME") != "") {
+        if (get_env("LIST_FILES") != nullptr && strcmp(get_env("LIST_FILES"), "1") == 0) {
+            // if user want to list files, no other work is done
+            env_arguments.list_stored_files = true;
+        } else if (get_env("NAME") != nullptr && get_env("NAME")[0] != '\0') {
             env_arguments.loaded_from_file = true;
             env_arguments.set_name(get_env("NAME"));
         } else {
