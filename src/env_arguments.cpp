@@ -114,9 +114,11 @@ namespace env_arguments_ns {
             // if user want to list files, no other work is done
             env_arguments.list_stored_files = true;
         } else if (get_env("NAME") != nullptr && get_env("NAME")[0] != '\0') {
+            // frames will be loaded from the file
             env_arguments.loaded_from_file = true;
             env_arguments.set_name(get_env("NAME"));
         } else {
+            // frames will be created from mp4 file
             env_arguments.set_path(get_env("INPUT_PATH"));
             env_arguments.set_fps(get_env("FPS"));
             env_arguments.set_size(get_env("SIZE"));
