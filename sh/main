@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-APP_NAME=console_video
+APP_NAME=console_animation
 CONFIG_FILE="../config"
 
 check_argument() {
@@ -13,7 +13,7 @@ check_argument() {
 }
 
 #default storage location
-STORAGE_PATH="$HOME/.local/share/console_video/.storage"
+STORAGE_PATH="$HOME/.local/share/console_animation/.storage"
 
 LIST_FILES=0
 NAME=""

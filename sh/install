@@ -1,0 +1,73 @@
+#!/bin/bash
+set -euo pipefail
+
+IMAGE_NAME="maksimphono/console_animation"
+IMAGE_TAG="${1:-latest}"
+CONFIG_FILE_PATH=../config # assuming user cloned repository
+
+DEFAULT_CONFIGURATION_SETTINGS= \
+"STORAGE_PATH=$HOME/.local/share/console_animation/.storage \
+SIZE=66x19 \
+FPS=2 \
+TIME=0-5 \
+"
+
+echo "--- Preparing to install ---"
+echo "Attempting to pull Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
+
+if ! command -v docker &> /dev/null; then
+    echo -e "\n"
+    echo "Error: Docker can not be found!"
+    echo "Please install Docker on your machine (https://docs.docker.com/engine/install/)"
+    exit 1
+fi
+
+docker pull "${IMAGE_NAME}:${IMAGE_TAG}"
+
+echo -e "\n"
+if [ $? -eq 0 ]; then
+    echo "Image pulled successfully!"
+    echo "You can now run the main script using: ./main [path] [arguments] (refer to the README.md for more instructions)"
+    echo "You can also add a symlink to the main file using: ln -s ./main dir-scanner-or-whatever"
+else
+    echo "Error: Failed to pull Docker image. Please check your internet connection or Docker setup."
+    exit 1
+fi
+
+if [[ -f "$CONFIG_FILE_PATH" ]]; then
+    # The directory exists.
+    echo "Found configuration file!"
+else
+    # The directory does not exist or it's a file.
+    echo "Configuration file wasn't found, creating default file!"
+    
+    echo $DEFAULT_CONFIGURATION_SETTINGS > "$CONFIG_FILE_PATH"
+
+    if [[ -f "$CONFIG_FILE_PATH" ]]; then
+        echo "Default configuration file was created successfully!"
+    else
+        echo "Failed to create configuration file!"
+    fi
+fi
+
+source $CONFIG_FILE_PATH
+
+if [[ -d "$STORAGE_PATH" ]]; then
+    echo "Storage directory found successfully!"
+else
+    echo "Storage directory wasn't found, creating..."
+
+    mkdir "$STORAGE_PATH"
+
+    if [[ -d "$STORAGE_PATH" ]]; then
+        echo "Storage directory created successfully!"
+    else
+        echo "Failed to create storage directory!"
+        exit 1
+    fi
+fi 
+
+STORAGE_PATH
+
+echo -e "\n"
+echo "--- Installation Complete ---"
