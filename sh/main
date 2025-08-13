@@ -1,0 +1,131 @@
+LIST_FILES=0
+NAME=""
+FPS="2"
+SIZE="66x19"
+TIME="0-5"
+
+#!/bin/bash
+
+set -euo pipefail
+
+INPUT_PATH=""
+INPUT_PATH_EXTENSION=""
+INPUT_NAME=""
+INPUT_DIR_PATH=""
+
+#CONTAINER_INPUT_PATH="/data/"
+
+args=()
+
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        -l)
+            args+=( "-e LIST_FILES='1'" )
+            break
+            ;;
+        -i)
+            if [[ -n "$2" && ! "$2" =~ ^- ]]; then
+                INPUT_PATH=$2
+                INPUT_PATH_EXTENSION="${INPUT_PATH##*.}"
+                INPUT_NAME=$(basename "$INPUT_PATH")
+                INPUT_DIR_PATH=$(dirname "$INPUT_PATH")
+                #CONTAINER_INPUT_PATH+="$INPUT_NAME"
+                echo "Inp: $INPUT_PATH"
+                shift # Consume the argument value
+            else
+                echo "Error: Argument for $1 is missing or invalid."
+                exit 1
+            fi
+            ;;
+            #echo "Unknown parameter passed: $1"
+        -f)
+            if [[ -n "$2" && ! "$2" =~ ^- ]]; then
+                FPS=$2
+                shift # Consume the argument value
+            else
+                echo "Error: Argument for $1 is missing or invalid."
+                exit 1
+            fi
+            ;;
+        -s)
+            if [[ -n "$2" && ! "$2" =~ ^- ]]; then
+                SIZE=$2
+                shift # Consume the argument value
+            else
+                echo "Error: Argument for $1 is missing or invalid."
+                exit 1
+            fi
+            ;;
+        -t)
+            if [[ -n "$2" && ! "$2" =~ ^- ]]; then
+                TIME=$2
+                shift # Consume the argument value
+            else
+                echo "Error: Argument for $1 is missing or invalid."
+                exit 1
+            fi
+            ;;
+        *)
+    esac
+    shift
+done
+
+echo "${args[@]}"
+
+COMMAND="docker run -it --rm ${args[@]} -v './build/storage:/home/storage' console_video_prod:latest"
+
+#"${COMMAND}"
+
+#INPUT_PATH="../Rick.mp4"
+#INPUT_NAME=$(basename "$INPUT_PATH")
+#INPUT_DIR_PATH=$(dirname "$INPUT_PATH")
+
+docker run \
+    -it \
+    --rm \
+    -e LIST_FILES='' \
+    -e NAME='' \
+    -e FPS=$FPS \
+    -e SIZE=$SIZE \
+    -e TIME=$TIME \
+    -e INPUT_PATH="/data/$INPUT_NAME" \
+    -v "$INPUT_DIR_PATH:/data/" \
+    -v "/home/trukhinmaksim/Maksim/Projects/cli/01_console_video/build/storage:/home/storage" \
+    console_video_prod:v0.0.5
+
+#-e INPUT_PATH="/data/${INPUT_NAME}" \
+#-v "${INPUT_DIR_PATH}:/data/" \
+
+# ${args[@]}
+#if [[ ! -f "$INPUT_PATH" ]]; then
+#    echo "Provided file $INPUT_PATH can't be found"
+#    exit 1
+#fi
+#if [[ ! "$INPUT_PATH_EXTENSION" == "mp4" ]]; then
+#    echo "Provided file format $INPUT_PATH_EXTENSION isn't supported. Supported formats: mp4"
+#    exit 1
+#fi
+#
+#shift
+#ORIGINAL_ARGS=("$@")
+#IMG_OUTPUT_PATH="$INPUT_DIR_NAME.png"
+#
+#
+#IMG_OUTPUT_DIR_PATH=$(dirname "$IMG_OUTPUT_PATH")
+#IMG_OUTPUT_NAME=$(basename "$IMG_OUTPUT_PATH")
+#IMG_OUTPUT_EXTENSION="${IMG_OUTPUT_NAME##*.}"
+#
+#if [[ ! "$IMG_OUTPUT_EXTENSION" == "png" && \
+#      ! "$IMG_OUTPUT_EXTENSION" == "jpg" && \
+#      ! "$IMG_OUTPUT_EXTENSION" == "jpeg" && \
+#      ! "$IMG_OUTPUT_EXTENSION" == "svg" ]]; then
+#    echo "Sorry, only following formats are supported: png, jpg, jpeg, svg"
+#    IMG_OUTPUT_EXTENSION="png"
+#fi
+#
+#CODE_CREATOR_PATH="./code_creator.o"
+#PLANTUML_JAR_PATH="/home/dist/plantuml.jar"
+#
+#COMMAND="$CODE_CREATOR_PATH /data/$INPUT_DIR_NAME ${ORIGINAL_ARGS[@]} | java -Djava.awt.headless=true -jar $PLANTUML_JAR_PATH -t$IMG_OUTPUT_EXTENSION -pipe > /output/$IMG_OUTPUT_NAME"
+
+echo "--- Run Complete ---"

@@ -28,10 +28,11 @@ COPY ./jp2a/src/jp2a /usr/local/bin
 
 COPY ./build/storage /home/storage
 
-COPY Rick.mp4 /home/
+#COPY Rick.mp4 /home/
 
-CMD ["/bin/sh"]
+CMD ["/home/main"]
 
+# Requird packages:
 #   ncurses
 #   libstdc++6
 #   libgcc
