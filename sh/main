@@ -13,14 +13,13 @@ INPUT_PATH_EXTENSION=""
 INPUT_NAME=""
 INPUT_DIR_PATH=""
 
-#CONTAINER_INPUT_PATH="/data/"
-
 args=( "-v /home/trukhinmaksim/Maksim/Projects/cli/01_console_video/build/storage:/home/storage" )
 
 while [[ "$#" -gt 0 ]]; do
     case "$1" in
         -l)
             args+=( "-e LIST_FILES=1")
+            break
             ;;
         -i)
             if [[ -n "$2" && ! "$2" =~ ^- ]]; then
@@ -39,6 +38,16 @@ while [[ "$#" -gt 0 ]]; do
             fi
             ;;
             #echo "Unknown parameter passed: $1"
+        -n)
+            if [[ -n "$2" && ! "$2" =~ ^- ]]; then
+                args+=( "-e NAME=$2" )
+                break
+                shift # Consume the argument value
+            else
+                echo "Error: Argument for $1 is missing or invalid."
+                exit 1
+            fi
+            ;;
         -f)
             if [[ -n "$2" && ! "$2" =~ ^- ]]; then
                 FPS=$2
@@ -71,9 +80,6 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
-echo "${args[@]}"
-
-#args=()
 
 docker run \
     -it \
