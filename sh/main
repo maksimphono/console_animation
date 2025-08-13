@@ -1,12 +1,19 @@
+#!/bin/bash
+
+set -euo pipefail
+
+check_argument() {
+    if [[ ! -n "$2" || "$2" =~ ^- ]]; then
+        echo "Error: Argument for $1 is missing or invalid."
+        exit 1
+    fi
+}
+
 LIST_FILES=0
 NAME=""
 FPS="2"
 SIZE="66x19"
 TIME="0-5"
-
-#!/bin/bash
-
-set -euo pipefail
 
 INPUT_PATH=""
 INPUT_PATH_EXTENSION=""
@@ -22,58 +29,35 @@ while [[ "$#" -gt 0 ]]; do
             break
             ;;
         -i)
-            if [[ -n "$2" && ! "$2" =~ ^- ]]; then
-                INPUT_PATH=$2
-                INPUT_PATH_EXTENSION="${INPUT_PATH##*.}"
-                INPUT_NAME=$(basename "$INPUT_PATH")
-                INPUT_DIR_PATH=$(dirname "$INPUT_PATH")
-                
-                args+=( "-e INPUT_PATH=/data/$INPUT_NAME" )
-                args+=( "-v $INPUT_DIR_PATH:/data/" )
-
-                shift # Consume the argument value
-            else
-                echo "Error: Argument for $1 is missing or invalid."
-                exit 1
-            fi
+            $(check_argument $1 $2)
+            INPUT_PATH=$2
+            INPUT_PATH_EXTENSION="${INPUT_PATH##*.}"
+            INPUT_NAME=$(basename "$INPUT_PATH")
+            INPUT_DIR_PATH=$(dirname "$INPUT_PATH")
+            
+            args+=( "-e INPUT_PATH=/data/$INPUT_NAME" )
+            args+=( "-v $INPUT_DIR_PATH:/data/" )
+            shift 
             ;;
-            #echo "Unknown parameter passed: $1"
         -n)
-            if [[ -n "$2" && ! "$2" =~ ^- ]]; then
-                args+=( "-e NAME=$2" )
-                break
-                shift # Consume the argument value
-            else
-                echo "Error: Argument for $1 is missing or invalid."
-                exit 1
-            fi
+            $(check_argument $1 $2)
+            args+=( "-e NAME=$2" )
+            break
             ;;
         -f)
-            if [[ -n "$2" && ! "$2" =~ ^- ]]; then
-                FPS=$2
-                shift # Consume the argument value
-            else
-                echo "Error: Argument for $1 is missing or invalid."
-                exit 1
-            fi
+            $(check_argument $1 $2)
+            FPS=$2
+            shift 
             ;;
         -s)
-            if [[ -n "$2" && ! "$2" =~ ^- ]]; then
-                SIZE=$2
-                shift # Consume the argument value
-            else
-                echo "Error: Argument for $1 is missing or invalid."
-                exit 1
-            fi
+            $(check_argument $1 $2)
+            SIZE=$2
+            shift 
             ;;
         -t)
-            if [[ -n "$2" && ! "$2" =~ ^- ]]; then
-                TIME=$2
-                shift # Consume the argument value
-            else
-                echo "Error: Argument for $1 is missing or invalid."
-                exit 1
-            fi
+            $(check_argument $1 $2)
+            TIME=$2
+            shift 
             ;;
         *)
     esac
@@ -88,7 +72,7 @@ docker run \
     -e FPS=$FPS \
     -e SIZE=$SIZE \
     -e TIME=$TIME \
-    console_video_prod:v0.0.5
+    console_video_prod:latest
 
 #-e INPUT_PATH="/data/${INPUT_NAME}" \
 #-v "${INPUT_DIR_PATH}:/data/" \
@@ -134,5 +118,3 @@ docker run \
 #PLANTUML_JAR_PATH="/home/dist/plantuml.jar"
 #
 #COMMAND="$CODE_CREATOR_PATH /data/$INPUT_DIR_NAME ${ORIGINAL_ARGS[@]} | java -Djava.awt.headless=true -jar $PLANTUML_JAR_PATH -t$IMG_OUTPUT_EXTENSION -pipe > /output/$IMG_OUTPUT_NAME"
-
-echo "--- Run Complete ---"
