@@ -28,6 +28,4 @@ COPY --from=builder /home/build/main /home/
 
 COPY ./sh/jp2a /usr/local/bin
 
-COPY ./build/storage /home/storage
-
 CMD ["/home/main"]

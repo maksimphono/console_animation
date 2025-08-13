@@ -3,10 +3,7 @@
 set -euo pipefail
 
 APP_NAME=console_video
-
-#mkdir "$HOME/.local/share/$APP_NAME"
 CONFIG_FILE="../config"
-
 
 check_argument() {
     if [[ ! -n "$2" || "$2" =~ ^- ]]; then
@@ -36,11 +33,15 @@ args=( "-v $STORAGE_PATH:/home/storage" )
 
 while [[ "$#" -gt 0 ]]; do
     case "$1" in
-        -l)
+        -h|--help)
+            cat ../USAGE.txt <&1
+            exit 1
+            ;;
+        -l|--list)
             args+=( "-e LIST_FILES=1")
             break
             ;;
-        -i)
+        -i|--input)
             $(check_argument $1 $2)
             INPUT_PATH=$2
             INPUT_PATH_EXTENSION="${INPUT_PATH##*.}"
@@ -51,22 +52,22 @@ while [[ "$#" -gt 0 ]]; do
             args+=( "-v $INPUT_DIR_PATH:/data/" )
             shift 
             ;;
-        -n)
+        -n|--name)
             $(check_argument $1 $2)
             args+=( "-e NAME=$2" )
             break
             ;;
-        -f)
+        -f|--fps)
             $(check_argument $1 $2)
             FPS=$2
             shift 
             ;;
-        -s)
+        -s|--size)
             $(check_argument $1 $2)
             SIZE=$2
             shift 
             ;;
-        -t)
+        -t|--time)
             $(check_argument $1 $2)
             TIME=$2
             shift 

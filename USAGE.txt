@@ -1,0 +1,1 @@
+Description: Simple program, that can convert mp4 file into ASCII video and play it in the terminal
