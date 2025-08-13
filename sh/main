@@ -2,12 +2,20 @@
 
 set -euo pipefail
 
+APP_NAME=console_video
+
+#mkdir "$HOME/.local/share/$APP_NAME"
+CONFIG_FILE="../config"
+
+
 check_argument() {
     if [[ ! -n "$2" || "$2" =~ ^- ]]; then
         echo "Error: Argument for $1 is missing or invalid."
         exit 1
     fi
 }
+
+STORAGE_PATH="$HOME/.local/share/console_video/.storage" #default storage location
 
 LIST_FILES=0
 NAME=""
@@ -20,7 +28,9 @@ INPUT_PATH_EXTENSION=""
 INPUT_NAME=""
 INPUT_DIR_PATH=""
 
-args=( "-v /home/trukhinmaksim/Maksim/Projects/cli/01_console_video/build/storage:/home/storage" )
+source $CONFIG_FILE # load configuration
+
+args=( "-v $STORAGE_PATH:/home/storage" )
 
 while [[ "$#" -gt 0 ]]; do
     case "$1" in
