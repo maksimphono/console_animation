@@ -18,7 +18,7 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-#docker pull "${IMAGE_NAME}:${IMAGE_TAG}"
+docker pull "${IMAGE_NAME}:${IMAGE_TAG}"
 
 echo -e "\n"
 if [ $? -eq 0 ]; then
