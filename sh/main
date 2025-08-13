@@ -15,13 +15,12 @@ INPUT_DIR_PATH=""
 
 #CONTAINER_INPUT_PATH="/data/"
 
-args=()
+args=( "-v /home/trukhinmaksim/Maksim/Projects/cli/01_console_video/build/storage:/home/storage" )
 
 while [[ "$#" -gt 0 ]]; do
     case "$1" in
         -l)
-            args+=( "-e LIST_FILES='1'" )
-            break
+            args+=( "-e LIST_FILES=1")
             ;;
         -i)
             if [[ -n "$2" && ! "$2" =~ ^- ]]; then
@@ -29,8 +28,10 @@ while [[ "$#" -gt 0 ]]; do
                 INPUT_PATH_EXTENSION="${INPUT_PATH##*.}"
                 INPUT_NAME=$(basename "$INPUT_PATH")
                 INPUT_DIR_PATH=$(dirname "$INPUT_PATH")
-                #CONTAINER_INPUT_PATH+="$INPUT_NAME"
-                echo "Inp: $INPUT_PATH"
+                
+                args+=( "-e INPUT_PATH=/data/$INPUT_NAME" )
+                args+=( "-v $INPUT_DIR_PATH:/data/" )
+
                 shift # Consume the argument value
             else
                 echo "Error: Argument for $1 is missing or invalid."
@@ -72,29 +73,29 @@ done
 
 echo "${args[@]}"
 
-COMMAND="docker run -it --rm ${args[@]} -v './build/storage:/home/storage' console_video_prod:latest"
-
-#"${COMMAND}"
-
-#INPUT_PATH="../Rick.mp4"
-#INPUT_NAME=$(basename "$INPUT_PATH")
-#INPUT_DIR_PATH=$(dirname "$INPUT_PATH")
+#args=()
 
 docker run \
     -it \
     --rm \
-    -e LIST_FILES='' \
-    -e NAME='' \
+    ${args[@]} \
     -e FPS=$FPS \
     -e SIZE=$SIZE \
     -e TIME=$TIME \
-    -e INPUT_PATH="/data/$INPUT_NAME" \
-    -v "$INPUT_DIR_PATH:/data/" \
-    -v "/home/trukhinmaksim/Maksim/Projects/cli/01_console_video/build/storage:/home/storage" \
     console_video_prod:v0.0.5
 
 #-e INPUT_PATH="/data/${INPUT_NAME}" \
 #-v "${INPUT_DIR_PATH}:/data/" \
+
+#-e LIST_FILES=$LIST_FILES \
+#    -e NAME='' \
+#    -e FPS=$FPS \
+#    -e SIZE=$SIZE \
+#    -e TIME=$TIME \
+#    -e INPUT_PATH="/data/$INPUT_NAME" \
+#-v "$INPUT_DIR_PATH:/data/" \
+#    -v "/home/trukhinmaksim/Maksim/Projects/cli/01_console_video/build/storage:/home/storage" \
+
 
 # ${args[@]}
 #if [[ ! -f "$INPUT_PATH" ]]; then
