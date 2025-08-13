@@ -1,3 +1,5 @@
+# STAGE BUILDER:
+
 FROM ams21/cmake:latest as builder
 
 RUN apk update && \
@@ -13,7 +15,7 @@ WORKDIR /home/build/
 
 RUN ./build
 
-# RUNNER:
+# STAGE RUNNER:
 
 FROM alpine:latest as runner
 
@@ -24,17 +26,8 @@ WORKDIR /home/
 
 COPY --from=builder /home/build/main /home/
 
-COPY ./jp2a/src/jp2a /usr/local/bin
+COPY ./sh/jp2a /usr/local/bin
 
 COPY ./build/storage /home/storage
 
-#COPY Rick.mp4 /home/
-
 CMD ["/home/main"]
-
-# Requird packages:
-#   ncurses
-#   libstdc++6
-#   libgcc
-#   musl
-#   libjpeg-turbo
