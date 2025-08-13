@@ -15,20 +15,22 @@ check_argument() {
     fi
 }
 
-STORAGE_PATH="$HOME/.local/share/console_video/.storage" #default storage location
+#default storage location
+STORAGE_PATH="$HOME/.local/share/console_video/.storage"
 
 LIST_FILES=0
 NAME=""
-FPS="2"
-SIZE="66x19"
-TIME="0-5"
+SIZE=66x19
+FPS=2
+TIME=0-5
 
 INPUT_PATH=""
 INPUT_PATH_EXTENSION=""
 INPUT_NAME=""
 INPUT_DIR_PATH=""
 
-source $CONFIG_FILE # load configuration
+# load configuration:
+source $CONFIG_FILE
 
 args=( "-v $STORAGE_PATH:/home/storage" )
 
@@ -83,48 +85,3 @@ docker run \
     -e SIZE=$SIZE \
     -e TIME=$TIME \
     console_video_prod:latest
-
-#-e INPUT_PATH="/data/${INPUT_NAME}" \
-#-v "${INPUT_DIR_PATH}:/data/" \
-
-#-e LIST_FILES=$LIST_FILES \
-#    -e NAME='' \
-#    -e FPS=$FPS \
-#    -e SIZE=$SIZE \
-#    -e TIME=$TIME \
-#    -e INPUT_PATH="/data/$INPUT_NAME" \
-#-v "$INPUT_DIR_PATH:/data/" \
-#    -v "/home/trukhinmaksim/Maksim/Projects/cli/01_console_video/build/storage:/home/storage" \
-
-
-# ${args[@]}
-#if [[ ! -f "$INPUT_PATH" ]]; then
-#    echo "Provided file $INPUT_PATH can't be found"
-#    exit 1
-#fi
-#if [[ ! "$INPUT_PATH_EXTENSION" == "mp4" ]]; then
-#    echo "Provided file format $INPUT_PATH_EXTENSION isn't supported. Supported formats: mp4"
-#    exit 1
-#fi
-#
-#shift
-#ORIGINAL_ARGS=("$@")
-#IMG_OUTPUT_PATH="$INPUT_DIR_NAME.png"
-#
-#
-#IMG_OUTPUT_DIR_PATH=$(dirname "$IMG_OUTPUT_PATH")
-#IMG_OUTPUT_NAME=$(basename "$IMG_OUTPUT_PATH")
-#IMG_OUTPUT_EXTENSION="${IMG_OUTPUT_NAME##*.}"
-#
-#if [[ ! "$IMG_OUTPUT_EXTENSION" == "png" && \
-#      ! "$IMG_OUTPUT_EXTENSION" == "jpg" && \
-#      ! "$IMG_OUTPUT_EXTENSION" == "jpeg" && \
-#      ! "$IMG_OUTPUT_EXTENSION" == "svg" ]]; then
-#    echo "Sorry, only following formats are supported: png, jpg, jpeg, svg"
-#    IMG_OUTPUT_EXTENSION="png"
-#fi
-#
-#CODE_CREATOR_PATH="./code_creator.o"
-#PLANTUML_JAR_PATH="/home/dist/plantuml.jar"
-#
-#COMMAND="$CODE_CREATOR_PATH /data/$INPUT_DIR_NAME ${ORIGINAL_ARGS[@]} | java -Djava.awt.headless=true -jar $PLANTUML_JAR_PATH -t$IMG_OUTPUT_EXTENSION -pipe > /output/$IMG_OUTPUT_NAME"
