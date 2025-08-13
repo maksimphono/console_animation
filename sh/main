@@ -6,7 +6,7 @@ APP_NAME=console_animation
 CONFIG_FILE="../config"
 
 check_argument() {
-    if [[ ! -n "$2" || "$2" =~ ^- ]]; then
+    if [[ -z "$2" || ! -n "$2" || "$2" =~ ^- ]]; then
         echo "Error: Argument for $1 is missing or invalid."
         exit 1
     fi
@@ -35,10 +35,15 @@ while [[ "$#" -gt 0 ]]; do
     case "$1" in
         -h|--help)
             cat ../USAGE.txt <&1
-            exit 1
+            exit 0
             ;;
         -l|--list)
             args+=( "-e LIST_FILES=1")
+            break
+            ;;
+        -n|--name)
+            $(check_argument $1 $2)
+            args+=( "-e NAME=$2" )
             break
             ;;
         -i|--input)
@@ -47,15 +52,16 @@ while [[ "$#" -gt 0 ]]; do
             INPUT_PATH_EXTENSION="${INPUT_PATH##*.}"
             INPUT_NAME=$(basename "$INPUT_PATH")
             INPUT_DIR_PATH=$(dirname "$INPUT_PATH")
+
+            case "$INPUT_PATH" in 
+                *" "*)
+                echo "Sorry, spaces are not allowed in the input path"
+                exit 1
+            esac
             
             args+=( "-e INPUT_PATH=/data/$INPUT_NAME" )
             args+=( "-v $INPUT_DIR_PATH:/data/" )
-            shift 
-            ;;
-        -n|--name)
-            $(check_argument $1 $2)
-            args+=( "-e NAME=$2" )
-            break
+            shift
             ;;
         -f|--fps)
             $(check_argument $1 $2)
@@ -85,4 +91,4 @@ docker run \
     -e FPS=$FPS \
     -e SIZE=$SIZE \
     -e TIME=$TIME \
-    console_video_prod:latest
+    maksimphono/console_animation:v1.0.0

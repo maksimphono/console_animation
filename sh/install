@@ -6,12 +6,7 @@ IMAGE_NAME="maksimphono/console_animation"
 IMAGE_TAG="${1:-latest}"
 CONFIG_FILE_PATH=../config # assuming user cloned repository
 
-DEFAULT_CONFIGURATION_SETTINGS= \
-"STORAGE_PATH=$HOME/.local/share/console_animation/.storage \
-SIZE=66x19 \
-FPS=2 \
-TIME=0-5 \
-"
+DEFAULT_CONFIGURATION_SETTINGS="STORAGE_PATH=$HOME/.local/share/console_animation/.storage\nSIZE=66x19\nFPS=2\nTIME=0-5\n"
 
 echo "--- Preparing to install ---"
 echo "Attempting to pull Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
@@ -39,9 +34,9 @@ if [[ -f "$CONFIG_FILE_PATH" ]]; then
     echo "Found configuration file!"
 else
     echo "Configuration file wasn't found, creating default file!"
-    
+
     touch "$CONFIG_FILE_PATH"
-    echo $DEFAULT_CONFIGURATION_SETTINGS > "$CONFIG_FILE_PATH"
+    printf $DEFAULT_CONFIGURATION_SETTINGS > "$CONFIG_FILE_PATH"
 
     if [[ -f "$CONFIG_FILE_PATH" ]]; then
         echo "Default configuration file was created successfully!"
@@ -50,14 +45,14 @@ else
     fi
 fi
 
-source $CONFIG_FILE_PATH
+source "$CONFIG_FILE_PATH"
 
 if [[ -d "$STORAGE_PATH" ]]; then
     echo "Storage directory found successfully!"
 else
     echo "Storage directory wasn't found, creating..."
 
-    mkdir "$STORAGE_PATH"
+    mkdir -p "$STORAGE_PATH"
 
     if [[ -d "$STORAGE_PATH" ]]; then
         echo "Storage directory created successfully!"
