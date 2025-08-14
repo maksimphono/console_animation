@@ -6,10 +6,23 @@ Description: Simple program, that converts mp4 file into ASCII video and play it
 
 Usage:
 
-    -l --list           List all saved files in the storage directory (if specified other parameters are ignored)
-    -n --name           Specify name of a file to load and play (if specified other parameters are ignored)
-    -i --input          Specify path to the input file, it must be a video file, path must be without spaces
-    -f --fps            Specify the fps (frames per second) parameter to create ASCII animation from input file
-    -s --size           Specify size of the ASCII created animation, must be specified in form of "WxH" where 'W' is width and 'H' is height (both in symbols)
-    -t --time           Specify timeframe in the video file, that will be used to create ASCII animation, must be specified in form of "s-f" where 's' is starting timestamp and 'e' is ending timestamp (both in seconds)
+    -l --list           List all saved files in the storage directory 
+                        (if specified other parameters are ignored)
+    -d --del            Specify name of a file to remove from the storage 
+                        (if specified other parameters are ignored)
+    -n --name           Specify name of a file to load and play
+                        (if specified other parameters are ignored)
+    -i --input          Specify path to the input file, 
+                        it must be a video file, 
+                        path must be without spaces
+    -f --fps            Specify the fps (frames per second) parameter to create
+                        ASCII animation from input file
+    -s --size           Specify size of the ASCII created animation, 
+                        must be specified in form of "WxH" where 'W' is width
+                        and 'H' is height (both in symbols)
+    -t --time           Specify timeframe in the video file, 
+                        that will be used to create ASCII animation, 
+                        must be specified in form of "s-f" where
+                        's' is starting timestamp and
+                        'e' is ending timestamp (both in seconds)
     -h --help           Show this message
