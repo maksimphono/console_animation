@@ -23,8 +23,7 @@ docker pull "${IMAGE_NAME}:${IMAGE_TAG}"
 echo -e "\n"
 if [ $? -eq 0 ]; then
     echo "Image pulled successfully!"
-    echo "You can now run the main script using: ./main [path] [arguments] (refer to the README.md for more instructions)"
-    echo "You can also add a symlink to the main file using: ln -s ./main dir-scanner-or-whatever"
+    echo "You can now run the main script using: ./main [arguments] (refer to the README.md for more instructions)"
 else
     echo "Error: Failed to pull Docker image. Please check your internet connection or Docker setup."
     exit 1
