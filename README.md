@@ -8,6 +8,8 @@ Simple program, that can convert video file into ASCII animation and play it in 
 
 **Checkout links:**
 * [Dockerhub image](https://hub.docker.com/repository/docker/maksimphono/console_animation/general)
+* [GitHub repo](https://github.com/maksimphono/console_animation)
+* [GitLab repo](https://gitlab.com/maksimphono/console_video)
 
 ## 🚀 Getting started
 
@@ -62,9 +64,13 @@ conanim -i /path/to/video.mp4 --fps 8 --size "179x68" --time "5-15"
 
 ## 🎙️ Credits
 This program uses these open source software projects:
+
     - **[jp2a](https://github.com/cslarsen/jp2a)**
+
         - Author: **Christian Stigen Larsen**
+
     - **[ffmpeg](https://github.com/FFmpeg/FFmpeg)**
+
         - Authors: **Pavel Koshevoy** and **James Almer**
 
 ## 🛈 PS
