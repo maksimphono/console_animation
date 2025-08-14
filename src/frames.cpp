@@ -95,6 +95,10 @@ namespace frames_ns {
 
         TerminalRestorer restorer;
 
+        if (!check_path(arguments.path)) {
+            THROW_INPUT_FILE_NOT_FOUND_EXP(arguments.path)
+        }
+
         uint32_t* time = arguments.time;
 
         uint16_t inc_ms = 1000 / arguments.fps;

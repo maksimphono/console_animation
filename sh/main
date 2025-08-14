@@ -96,4 +96,4 @@ docker run \
     -e FPS=$FPS \
     -e SIZE=$SIZE \
     -e TIME=$TIME \
-    maksimphono/console_animation:v1.0.1
+    maksimphono/console_animation:v1.0.2

@@ -27,6 +27,8 @@ using namespace std;
 namespace env_arguments_ns {
     EnvArguments env_arguments;
 
+    static const string empty = "";
+
     DEFINE_EXCEPTION_CLASS(ArgumentException, "Exception with arguments");
 
     void assert_path(string value) {
@@ -99,25 +101,25 @@ namespace env_arguments_ns {
         this->name = raw_name;
     }
 
-    const char* get_env(const char* name) {
+    string get_env(const char* name) {
         try {
             return getenv(name);
         } catch(std::exception& exp) {
-            return nullptr;
+            return empty;
         }
     }
 
     EnvArguments& get_env_arguments() {
         EnvArguments& env_arguments = env_arguments_ns::env_arguments;
 
-        if (get_env("LIST_FILES") != nullptr && strcmp(get_env("LIST_FILES"), "1") == 0) {
+        if (get_env("LIST_FILES") == "1") {
             // if user want to list files, no other work is done
             env_arguments.list_stored_files = true;
-        } else if (get_env("NAME_TO_DELETE") != nullptr && get_env("NAME_TO_DELETE")[0] != '\0') {
+        } else if (get_env("NAME_TO_DELETE") != empty) {
             // if user wants to delete a file from the storage
             env_arguments.delete_file = true;
             env_arguments.set_name(get_env("NAME_TO_DELETE"));
-        } else if (get_env("NAME") != nullptr && get_env("NAME")[0] != '\0') {
+        } else if (get_env("NAME") != empty) {
             // frames will be loaded from the file
             env_arguments.loaded_from_file = true;
             env_arguments.set_name(get_env("NAME"));
