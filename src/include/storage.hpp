@@ -31,6 +31,9 @@ namespace fs = filesystem;
 #define THROW_FILE_NOT_FOUND_EXP(name) \
     throw StorageException("Sorry, file with this name wasn't found. Did you spell it correctly?")
 
+#define THROW_CANT_DELETE_FILE_EXP \
+    throw StorageException("Unexpected error while removing the file. Check file permissions.")
+
 namespace storage_ns {
     DEFINE_EXCEPTION_CLASS(StorageException, "Unknown error occured with storage!");
     
@@ -75,7 +78,7 @@ namespace storage_ns {
 
     void write_meta_data(ofstream& file, string& name, EnvArguments& arguments);
 
-    bool delete_file(string name);
+    void delete_file(string name);
 
     uint32_t save_file(string name, vector<Frame>& frames, EnvArguments& arguments);
     // saves the sequence of frames along with specific arguments to a new file

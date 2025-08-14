@@ -108,14 +108,15 @@ namespace storage_ns {
         }
     }
 
-    bool delete_file(string name) {
+    void delete_file(string name) {
         if (name == "" || check_exsistance(name) == false) {
             THROW_FILE_NOT_FOUND_EXP(name);
         }
 
         fs::remove(create_path(name));
 
-        return !check_exsistance(name);
+        if (check_exsistance(name))
+            THROW_CANT_DELETE_FILE_EXP;
     }
 
     uint32_t save_file(string name, vector<Frame>& frames, EnvArguments& arguments) {
