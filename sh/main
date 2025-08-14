@@ -41,6 +41,11 @@ while [[ "$#" -gt 0 ]]; do
             args+=( "-e LIST_FILES=1")
             break
             ;;
+        -d|--del)
+            $(check_argument $1 $2)
+            args+=( "-e NAME_TO_DELETE=$2" )
+            break
+            ;;
         -n|--name)
             $(check_argument $1 $2)
             args+=( "-e NAME=$2" )
@@ -91,4 +96,4 @@ docker run \
     -e FPS=$FPS \
     -e SIZE=$SIZE \
     -e TIME=$TIME \
-    maksimphono/console_animation:v1.0.0
+    maksimphono/console_animation:v1.0.1

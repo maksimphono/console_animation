@@ -114,6 +114,7 @@ namespace env_arguments_ns {
             // if user want to list files, no other work is done
             env_arguments.list_stored_files = true;
         } else if (get_env("NAME_TO_DELETE") != nullptr && get_env("NAME_TO_DELETE")[0] != '\0') {
+            // if user wants to delete a file from the storage
             env_arguments.delete_file = true;
             env_arguments.set_name(get_env("NAME_TO_DELETE"));
         } else if (get_env("NAME") != nullptr && get_env("NAME")[0] != '\0') {
