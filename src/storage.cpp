@@ -108,6 +108,16 @@ namespace storage_ns {
         }
     }
 
+    bool delete_file(string name) {
+        if (name == "" || check_exsistance(name) == false) {
+            THROW_FILE_NOT_FOUND_EXP(name);
+        }
+
+        fs::remove(create_path(name));
+
+        return !check_exsistance(name);
+    }
+
     uint32_t save_file(string name, vector<Frame>& frames, EnvArguments& arguments) {
         StorageWriter writer(name);
 

@@ -113,6 +113,9 @@ namespace env_arguments_ns {
         if (get_env("LIST_FILES") != nullptr && strcmp(get_env("LIST_FILES"), "1") == 0) {
             // if user want to list files, no other work is done
             env_arguments.list_stored_files = true;
+        } else if (get_env("NAME_TO_DELETE") != nullptr && get_env("NAME_TO_DELETE")[0] != '\0') {
+            env_arguments.delete_file = true;
+            env_arguments.set_name(get_env("NAME_TO_DELETE"));
         } else if (get_env("NAME") != nullptr && get_env("NAME")[0] != '\0') {
             // frames will be loaded from the file
             env_arguments.loaded_from_file = true;

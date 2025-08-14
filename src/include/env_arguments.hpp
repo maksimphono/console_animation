@@ -25,6 +25,7 @@ namespace env_arguments_ns {
         uint32_t time[2] = DEFAULT_TIME;
         bool loaded_from_file = false;
         bool list_stored_files = false;
+        bool delete_file = false;
 
         EnvArguments() {}
 

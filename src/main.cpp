@@ -13,7 +13,9 @@ using namespace std;
 int main() {
     try {
         env_arguments_ns::EnvArguments& env_arguments = env_arguments_ns::get_env_arguments();        
-        if (env_arguments.list_stored_files) {
+        if (env_arguments.delete_file) {
+            storage_ns::delete_file(env_arguments.name);
+        } else if (env_arguments.list_stored_files) {
             storage_ns::list_all_files(cout);
         } else {
             vector<frames_ns::Frame> frames = frames_ns::create_frames(env_arguments);
