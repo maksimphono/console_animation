@@ -3,7 +3,7 @@
 set -euo pipefail
 
 IMAGE_NAME="maksimphono/console_animation"
-IMAGE_TAG="${1:-latest}"
+IMAGE_TAG="${1:-v1.0.2}"
 CONFIG_FILE_PATH=../config # assuming user cloned repository
 
 DEFAULT_CONFIGURATION_SETTINGS="STORAGE_PATH=$HOME/.local/share/console_animation/.storage\nSIZE=66x19\nFPS=2\nTIME=0-5\n"
@@ -62,6 +62,12 @@ else
 fi
 
 ln -s "$(pwd)/main" /usr/local/bin/conanim
+
+if [[ ! -f "/etc/console_animation/config" ]]; then
+    mkdir -p /etc/console_animation
+    mv ../config /etc/console_animation/
+    ln -s /etc/console_animation/config ../config
+fi
 
 echo -e "\n"
 echo "--- Installation Complete ---"
