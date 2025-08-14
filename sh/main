@@ -1,0 +1,99 @@
+#!/bin/bash
+
+set -euo pipefail
+
+APP_NAME=console_animation
+CONFIG_FILE="../config"
+
+check_argument() {
+    if [[ -z "$2" || ! -n "$2" || "$2" =~ ^- ]]; then
+        echo "Error: Argument for $1 is missing or invalid."
+        exit 1
+    fi
+}
+
+#default storage location
+STORAGE_PATH="$HOME/.local/share/console_animation/.storage"
+
+LIST_FILES=0
+NAME=""
+SIZE=66x19
+FPS=2
+TIME=0-5
+
+INPUT_PATH=""
+INPUT_PATH_EXTENSION=""
+INPUT_NAME=""
+INPUT_DIR_PATH=""
+
+# load configuration:
+source $CONFIG_FILE
+
+args=( "-v $STORAGE_PATH:/home/storage" )
+
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        -h|--help)
+            cat ../USAGE.txt <&1
+            exit 0
+            ;;
+        -l|--list)
+            args+=( "-e LIST_FILES=1")
+            break
+            ;;
+        -d|--del)
+            $(check_argument $1 $2)
+            args+=( "-e NAME_TO_DELETE=$2" )
+            break
+            ;;
+        -n|--name)
+            $(check_argument $1 $2)
+            args+=( "-e NAME=$2" )
+            break
+            ;;
+        -i|--input)
+            $(check_argument $1 $2)
+            INPUT_PATH=$2
+            INPUT_PATH_EXTENSION="${INPUT_PATH##*.}"
+            INPUT_NAME=$(basename "$INPUT_PATH")
+            INPUT_DIR_PATH=$(dirname "$INPUT_PATH")
+
+            case "$INPUT_PATH" in 
+                *" "*)
+                echo "Sorry, spaces are not allowed in the input path"
+                exit 1
+            esac
+            
+            args+=( "-e INPUT_PATH=/data/$INPUT_NAME" )
+            args+=( "-v $INPUT_DIR_PATH:/data/" )
+            shift
+            ;;
+        -f|--fps)
+            $(check_argument $1 $2)
+            FPS=$2
+            shift 
+            ;;
+        -s|--size)
+            $(check_argument $1 $2)
+            SIZE=$2
+            shift 
+            ;;
+        -t|--time)
+            $(check_argument $1 $2)
+            TIME=$2
+            shift 
+            ;;
+        *)
+    esac
+    shift
+done
+
+
+docker run \
+    -it \
+    --rm \
+    ${args[@]} \
+    -e FPS=$FPS \
+    -e SIZE=$SIZE \
+    -e TIME=$TIME \
+    maksimphono/console_animation:v1.0.2

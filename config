@@ -1,0 +1,9 @@
+# Specify, where the storage will be:
+
+STORAGE_PATH=$HOME/.local/share/console_animation/.storage
+
+# Specify default values for every parameter:
+
+SIZE=66x19
+FPS=2
+TIME=0-5

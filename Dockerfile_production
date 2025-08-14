@@ -1,0 +1,31 @@
+# STAGE BUILDER:
+
+FROM ams21/cmake:latest as builder
+
+RUN apk update && \
+    apk add git \
+        ncurses \
+        ncurses-dev
+
+WORKDIR /home/
+
+COPY . /home/
+
+WORKDIR /home/build/
+
+RUN ./build
+
+# STAGE RUNNER:
+
+FROM alpine:latest as runner
+
+RUN apk update && \
+    apk add ncurses libstdc++ libgcc musl libjpeg-turbo ffmpeg
+
+WORKDIR /home/
+
+COPY --from=builder /home/build/main /home/
+
+COPY ./sh/jp2a /usr/local/bin
+
+CMD ["/home/main"]
