@@ -61,7 +61,9 @@ else
     fi
 fi
 
-ln -s "$(pwd)/main" /usr/local/bin/conanim
+if [[ ! -f /usr/local/bin/conanim ]]; then
+    ln -s "$(pwd)/main" /usr/local/bin/conanim
+fi
 
 if [[ ! -f "/etc/console_animation/config" ]]; then
     mkdir -p /etc/console_animation

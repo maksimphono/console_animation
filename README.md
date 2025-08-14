@@ -25,10 +25,10 @@ To get started, just clone the repo and run "install" script (you probably need 
     git clone 
     cd sh
     ```
-2. **Change permissions and install** Run instalation script, it will pull docker image:
+2. **Change permissions and install** Run instalation script with 'sudo', it will pull docker image and configure directories:
     ```bash
     sudo chmod +x install main
-    ./install v1.0.2
+    sudo ./install
     ```
 
 3. **Change path to the storage (Recommended)** Open file "config" in the root of the repo, find variable "STORAGE_PATH" and set the path to a folder you want to use to store saved files. You can also adjust default values of the parameters in this file
