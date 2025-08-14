@@ -3,7 +3,7 @@
 set -euo pipefail
 
 APP_NAME=console_animation
-CONFIG_FILE="../config"
+CONFIG_FILE="/etc/console_animation/config"
 
 check_argument() {
     if [[ -z "$2" || ! -n "$2" || "$2" =~ ^- ]]; then

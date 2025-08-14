@@ -42,6 +42,8 @@ To get started, just clone the repo and run "install" script (you probably need 
     conanim -n "file_name" # if you already saved a file
     ```
 
+After instalation script completes, config file will be moved into directory /etc/console_animation, and symbolic link to the main script will be created in the /usr/local/bin.
+
 You can also build the docker image youself, in that case don't bother running 'install' script, build the image, tag it, and change the last line in the "sh/main" script, where image name and tag are specified, then you should be able to run the 'main' script
 ```bash
 docker build -t my_console_animation:latest -f ./Dockerfile_production .
@@ -64,14 +66,10 @@ conanim -i /path/to/video.mp4 --fps 8 --size "179x68" --time "5-15"
 
 ## 🎙️ Credits
 This program uses these open source software projects:
-
-    - **[jp2a](https://github.com/cslarsen/jp2a)**
-
-        - Author: **Christian Stigen Larsen**
-
-    - **[ffmpeg](https://github.com/FFmpeg/FFmpeg)**
-
-        - Authors: **Pavel Koshevoy** and **James Almer**
+- **[jp2a](https://github.com/cslarsen/jp2a)**
+    - Author: **Christian Stigen Larsen**
+- **[ffmpeg](https://github.com/FFmpeg/FFmpeg)**
+    - Authors: **Pavel Koshevoy** and **James Almer**
 
 ## 🛈 PS
 Note, that this is NOT a multimedia software (it isn't meant to be), this is just a fun stuff, that you run in your secondary terminal just to make it a little more lively and fun. So please don't use it to actually watch the video.
