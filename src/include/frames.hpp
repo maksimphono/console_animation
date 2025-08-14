@@ -28,8 +28,8 @@ using EnvArguments = env_arguments_ns::EnvArguments;
 #define THROW_VIDEO_DURATION_EXP \
     throw FramesException(format("Error, something is wrong with underlying utility 'ffprobe'."));
 
-#define THROW_INPUT_FILE_NOT_FOUND_EXP(path) \
-    throw FramesException(format("Error, input file {0} wasn't found. Did you spell it correctly?", path));
+#define THROW_INPUT_FILE_NOT_FOUND_EXP \
+    throw FramesException("Error, input video file wasn't found. Did you spell it correctly?");
 
 
 namespace frames_ns {
