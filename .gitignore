@@ -1,1 +1,7 @@
 ./description
+Notes
+UML
+*.mp4
+.devcontainer/*
+*.vscode*
+*jp2a*
