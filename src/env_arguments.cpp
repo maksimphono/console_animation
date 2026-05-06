@@ -61,7 +61,7 @@ namespace env_arguments_ns {
 
         sscanf(raw_size.c_str(), "%ux%u", &w, &h);
 
-        if (1 > w || w > 255 || 1 > h || h > 255) {
+        if (MIN_SIZE > w || w > MAX_SIZE || MIN_SIZE > h || h > MAX_SIZE) {
             THROW_SIZE_INVALID_EXP(raw_size);
         }
 
@@ -75,7 +75,7 @@ namespace env_arguments_ns {
 
         sscanf(raw_fps.c_str(), "%d", &fps);
 
-        if (fps > 20 || fps < 1)
+        if (fps > MAX_FPS || fps < MIN_FPS)
             THROW_FPS_INVALID_EXP(fps);
 
         this->fps = static_cast<uint8_t>(fps);
@@ -104,7 +104,7 @@ namespace env_arguments_ns {
     }
 
     int get_raw_arguments(RawArguments& raw_arguments, int argc, char** argv){
-        CLI::App app{"App description"};
+        CLI::App app{"Simple program, that can convert video file into ASCII animation and play it in the terminal"};
         argv = app.ensure_utf8(argv);
 
         app.add_option("-i,--input", raw_arguments.path, "Path to input file");

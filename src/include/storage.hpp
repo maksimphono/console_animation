@@ -34,10 +34,14 @@ namespace fs = filesystem;
 #define THROW_CANT_DELETE_FILE_EXP \
     throw StorageException("Unexpected error while removing the file. Check file permissions.")
 
+#define APP_REL_PATH fs::path(".conanim")
+#define STORAGE_REL_PATH fs::path(".conanim/storage")
+
 namespace storage_ns {
     DEFINE_EXCEPTION_CLASS(StorageException, "Unknown error occured with storage!");
-    
-    const string storage_path("./storage");
+
+    static fs::path storage_path;
+    void init_storage_path();
 
     fs::path create_path(string& name);
 
@@ -46,7 +50,8 @@ namespace storage_ns {
         template <typename T>
         uint32_t write_metadata_entry(const char* name, T value);
     public:
-        StorageWriter(string name) : ofstream(create_path(name)) {}
+        StorageWriter(string name) : ofstream(create_path(name)) {
+        }
         ~StorageWriter() {
             this->close();
         }

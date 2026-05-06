@@ -4,6 +4,14 @@
 
 namespace storage_ns {
 
+    void init_storage_path() {
+        const char* home_path = getenv("HOME");
+        if (home_path == nullptr)
+            storage_ns::storage_path = fs::current_path() / STORAGE_REL_PATH;
+
+        storage_ns::storage_path = fs::path(home_path) / STORAGE_REL_PATH;
+    }
+
     template <typename T = string>
     uint32_t StorageWriter::write_metadata_entry(const char* name, T value) {
         *this << name << "=" << value << ";";
@@ -95,20 +103,23 @@ namespace storage_ns {
     }
 
     fs::path create_path(string& name) {
-        return fs::path(storage_path + "/" + name);
+        return storage_path / name;
     }
 
     bool check_exsistance(string& name) {
+        storage_ns::init_storage_path();
         return fs::exists(create_path(name));
     }
 
     void list_all_files(ostream& stream, string separator) {
+        storage_ns::init_storage_path();
         for (auto file = fs::directory_iterator(storage_path); file != fs::directory_iterator(); file++) {
             stream << file->path().filename() << separator;
         }
     }
 
     void delete_file(string name) {
+        storage_ns::init_storage_path();
         if (name == "" || check_exsistance(name) == false) {
             THROW_FILE_NOT_FOUND_EXP(name);
         }
@@ -120,6 +131,9 @@ namespace storage_ns {
     }
 
     uint32_t save_file(string name, vector<Frame>& frames, EnvArguments& arguments) {
+        storage_ns::init_storage_path();
+        if (fs::exists(storage_ns::storage_path) == false)
+            fs::create_directories(storage_ns::storage_path);
         StorageWriter writer(name);
 
         writer.write_metadata(arguments);
@@ -127,6 +141,8 @@ namespace storage_ns {
     }
 
     vector<Frame> load_file(string name, EnvArguments& arguments) {
+        storage_ns::init_storage_path();
+        cout << create_path(name) << endl;
         if (name == "" || check_exsistance(name) == false) {
             THROW_FILE_NOT_FOUND_EXP(name);
         }

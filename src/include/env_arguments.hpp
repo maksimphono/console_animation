@@ -14,6 +14,11 @@ using StorageReader = storage_ns::StorageReader;
 #define DEFAULT_SIZE {55, 16}
 #define DEFAULT_TIME {0, 10}
 
+#define MAX_FPS 24
+#define MIN_FPS 1
+#define MAX_SIZE 255
+#define MIN_SIZE 4
+
 namespace env_arguments_ns {
     typedef struct RawArguments {
         bool list_stored_files;
