@@ -142,7 +142,6 @@ namespace storage_ns {
 
     vector<Frame> load_file(string name, EnvArguments& arguments) {
         storage_ns::init_storage_path();
-        cout << create_path(name) << endl;
         if (name == "" || check_exsistance(name) == false) {
             THROW_FILE_NOT_FOUND_EXP(name);
         }

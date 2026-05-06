@@ -6,22 +6,9 @@
 
 #include "include/env_arguments.hpp"
 #include "include/storage.hpp"
-#include "include/exception.hpp"
 #include "include/CLI11.hpp"
 
 using namespace std;
-
-#define THROW_PATH_INVALID_EXP(path) \
-    throw ArgumentException(format("Can't find file \"{0}\", make sure filename and extension is spelled correctly. Supported file formats: mp4", path))
-
-#define THROW_SIZE_INVALID_EXP(size) \
-    throw ArgumentException(format("Sorry, can't accept size \"{0}\". Make sure to specify size as 'WxH' where 1 <= W, H <= 255", size))
-
-#define THROW_FPS_INVALID_EXP(fps) \
-    throw ArgumentException(format("Sorry, can't accept fps value {0}. Make sure to specify fps value as integer 1 <= fps <= 20", fps))
-
-#define THROW_TIME_INVALID_EXP \
-    throw ArgumentException("Time argument wasn't specified correctly, time must be specified in form of 'S-E' where 0 <= S < E")
 
 #define return_if_empty(str) if (str == "") return
 
@@ -30,8 +17,6 @@ namespace env_arguments_ns {
 
     static const string empty = "";
     static RawArguments default_arguments = {false, false, "", "", "2", "55x16", "0-10"};
-
-    DEFINE_EXCEPTION_CLASS(ArgumentException, "Exception with arguments");
 
     void assert_path(string value) {
         regex pattern("^((/|.|..)[^/\\0]+)*(/)?$");

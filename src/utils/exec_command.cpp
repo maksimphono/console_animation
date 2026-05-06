@@ -4,7 +4,7 @@
 
 using namespace std;
 
-string exec_command(string command, uint32_t buffer_size = 256) {
+static string exec_command(string command, uint32_t buffer_size = 256) {
     string result;
     char* buffer = new char[buffer_size];
     FILE* pipe = popen(command.c_str(), "r");

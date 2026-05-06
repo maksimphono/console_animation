@@ -3,6 +3,8 @@
 #include <string>
 #include <cstdint>
 
+#include "exception.hpp"
+
 namespace storage_ns {
     class StorageReader;
 }
@@ -19,7 +21,22 @@ using StorageReader = storage_ns::StorageReader;
 #define MAX_SIZE 255
 #define MIN_SIZE 4
 
+#define THROW_PATH_INVALID_EXP(path) \
+    throw ArgumentException(format("Can't find file \"{0}\", make sure filename and extension is spelled correctly. Supported file formats: mp4", path))
+
+#define THROW_SIZE_INVALID_EXP(size) \
+    throw ArgumentException(format("Sorry, can't accept size \"{0}\". Make sure to specify size as 'WxH' where 1 <= W, H <= 255", size))
+
+#define THROW_FPS_INVALID_EXP(fps) \
+    throw ArgumentException(format("Sorry, can't accept fps value {0}. Make sure to specify fps value as integer 1 <= fps <= 20", fps))
+
+#define THROW_TIME_INVALID_EXP \
+    throw ArgumentException("Time argument wasn't specified correctly, time must be specified in form of 'S-E' where 0 <= S < E")
+
+
 namespace env_arguments_ns {
+    DEFINE_EXCEPTION_CLASS(ArgumentException, "Exception with arguments");
+
     typedef struct RawArguments {
         bool list_stored_files;
         bool delete_file;
