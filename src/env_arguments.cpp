@@ -29,6 +29,7 @@ namespace env_arguments_ns {
     EnvArguments env_arguments;
 
     static const string empty = "";
+    static RawArguments default_arguments = {false, false, "", "", "2", "55x16", "0-10"};
 
     DEFINE_EXCEPTION_CLASS(ArgumentException, "Exception with arguments");
 
@@ -102,14 +103,6 @@ namespace env_arguments_ns {
         this->name = raw_name;
     }
 
-    string get_env(const char* name) {
-        try {
-            return getenv(name);
-        } catch(std::exception& exp) {
-            return empty;
-        }
-    }
-
     int get_raw_arguments(RawArguments& raw_arguments, int argc, char** argv){
         CLI::App app{"App description"};
         argv = app.ensure_utf8(argv);
@@ -128,27 +121,28 @@ namespace env_arguments_ns {
 
     EnvArguments& get_env_arguments(int argc, char** argv) {
         EnvArguments& env_arguments = env_arguments_ns::env_arguments;
-        RawArguments raw_arguments = RawArguments_default;
+        RawArguments& raw_arguments = env_arguments_ns::default_arguments;
 
         get_raw_arguments(raw_arguments, argc, argv);
 
-        if (get_env("LIST_FILES") == "1") {
+        if (raw_arguments.list_stored_files) {
             // if user want to list files, no other work is done
             env_arguments.list_stored_files = true;
-        } else if (get_env("NAME_TO_DELETE") != empty) {
-            // if user wants to delete a file from the storage
-            env_arguments.delete_file = true;
-            env_arguments.set_name(get_env("NAME_TO_DELETE"));
-        } else if (get_env("NAME") != empty) {
-            // frames will be loaded from the file
-            env_arguments.loaded_from_file = true;
-            env_arguments.set_name(get_env("NAME"));
+        } else if (raw_arguments.name != empty) {
+            if (raw_arguments.delete_file) {
+                // if user wants to delete a file from the storage
+                env_arguments.delete_file = true;
+            } else {
+                // frames will be loaded from the file
+                env_arguments.loaded_from_file = true;
+            }
+            env_arguments.set_name(raw_arguments.name);
         } else {
             // frames will be created from mp4 file
-            env_arguments.set_path(get_env("INPUT_PATH"));
-            env_arguments.set_fps(get_env("FPS"));
-            env_arguments.set_size(get_env("SIZE"));
-            env_arguments.set_time(get_env("TIME"));
+            env_arguments.set_path(raw_arguments.path);
+            env_arguments.set_fps(raw_arguments.fps);
+            env_arguments.set_size(raw_arguments.size);
+            env_arguments.set_time(raw_arguments.time);
         }
 
         return env_arguments;
