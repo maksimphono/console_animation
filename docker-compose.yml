@@ -1,0 +1,9 @@
+services:
+  dev:
+    container_name: "conanim_dev"
+    image: conanim/dev_image:dev
+    build: .
+    volumes:
+      - /home/trukhinmaksim/Maksim/Projects/cli/01_console_video:/home
+    tty: true
+    stdin_open: true
