@@ -44,33 +44,36 @@ namespace frames_ns {
     }
 
     Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
-        constexpr const char* pick_frame_command_template = "ffmpeg -loglevel -8 -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 {5}";
-        constexpr const char* convert_frame_command_template = "jp2a --size={0}x{1} {2}";
-        string output = "";
+        constexpr const char* pick_frame_command_template = "ffmpeg -loglevel -8 -ss {0}:{1}:{2}.{3} -i \"{4}\" -frames:v 1 -f image2pipe -";
+        constexpr const char* convert_frame_command_template = "jp2a - --size={0}x{1}";
+        vector<char> output = {};
+        string output_str = "";
         string temp_file_path = format("{0}/.frame_{1}.jpg", TEMP_PATH, ts.to_string());
 
         if (check_path(temp_file_path))
             fs::remove(temp_file_path);
 
-        exec_command(format(pick_frame_command_template, ts.hours, ts.minutes, ts.seconds, ts.miliseconds, path, temp_file_path));
-
+        output = exec_command<vector<char>>(format(pick_frame_command_template, ts.hours, ts.minutes, ts.seconds, ts.miliseconds, path), {}, 1024);
+        cout << output.size() << endl;
+        /*
         if (!check_path(temp_file_path)) {
             THROW_CANT_CREATE_TEMP_DIR_EXP(temp_file_path);
         }
+        */
 
-        output = exec_command(format(convert_frame_command_template, size[0], size[1], temp_file_path));
+        output_str = exec_command<string>(format(convert_frame_command_template, size[0], size[1]), output, 1024);
 
-        if (output.length() != (size[0] + 1) * size[1]) {
+        if (0 || output_str.length() != (size[0] + 1) * size[1]) {
             THROW_JP2A_PROGRAM_ISSUE_EXP;
         }
 
-        return Frame(output, size);
+        return Frame(output_str, size);
     }
 
     uint32_t get_video_duration(string& path) {
         constexpr const char* command_template = "ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 \"{0}\"";
         double duration = 0;
-        const string output = exec_command(format(command_template, path));
+        const string output = exec_command<string>(format(command_template, path));
 
         if (output.length() == 0) {
             THROW_VIDEO_DURATION_EXP;
