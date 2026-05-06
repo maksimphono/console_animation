@@ -40,7 +40,7 @@ namespace fs = filesystem;
 namespace storage_ns {
     DEFINE_EXCEPTION_CLASS(StorageException, "Unknown error occured with storage!");
 
-    static fs::path storage_path;
+    static fs::path storage_path = fs::path("");
     void init_storage_path();
 
     fs::path create_path(string& name);

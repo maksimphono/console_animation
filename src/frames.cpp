@@ -95,6 +95,10 @@ namespace frames_ns {
 
         TerminalRestorer restorer;
 
+        if (arguments.path.empty()) {
+            THROW_EMPTY_INPUT_EXP;
+        }
+
         if (!check_path(arguments.path)) {
             THROW_INPUT_FILE_NOT_FOUND_EXP;
         }

@@ -5,6 +5,7 @@
 namespace storage_ns {
 
     void init_storage_path() {
+        if (storage_ns::storage_path.empty() == false) return;
         const char* home_path = getenv("HOME");
         if (home_path == nullptr)
             storage_ns::storage_path = fs::current_path() / STORAGE_REL_PATH;

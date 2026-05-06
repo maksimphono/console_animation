@@ -31,6 +31,9 @@ using EnvArguments = env_arguments_ns::EnvArguments;
 #define THROW_INPUT_FILE_NOT_FOUND_EXP \
     throw FramesException("Error, input video file wasn't found. Did you spell it correctly?");
 
+#define THROW_EMPTY_INPUT_EXP \
+    throw FramesException("Input video file wasn't specified");
+
 
 namespace frames_ns {
     
