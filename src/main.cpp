@@ -8,11 +8,13 @@
 #include "include/env_arguments.hpp"
 #include "include/storage.hpp"
 
+#include "include/CLI11.hpp"
+
 using namespace std;
 
-int main() {
+int main(int argc, char* argv[]) {
     try {
-        env_arguments_ns::EnvArguments& env_arguments = env_arguments_ns::get_env_arguments();        
+        env_arguments_ns::EnvArguments& env_arguments = env_arguments_ns::get_env_arguments(argc, argv);
         if (env_arguments.delete_file) {
             storage_ns::delete_file(env_arguments.name);
         } else if (env_arguments.list_stored_files) {

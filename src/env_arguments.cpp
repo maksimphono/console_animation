@@ -7,6 +7,7 @@
 #include "include/env_arguments.hpp"
 #include "include/storage.hpp"
 #include "include/exception.hpp"
+#include "include/CLI11.hpp"
 
 using namespace std;
 
@@ -109,8 +110,27 @@ namespace env_arguments_ns {
         }
     }
 
-    EnvArguments& get_env_arguments() {
+    int get_raw_arguments(RawArguments& raw_arguments, int argc, char** argv){
+        CLI::App app{"App description"};
+        argv = app.ensure_utf8(argv);
+
+        app.add_option("-i,--input", raw_arguments.path, "Path to input file");
+        app.add_option("-f,--fps", raw_arguments.fps, "FPS");
+        app.add_option("-s,--size", raw_arguments.size, "Size of the resulting video (width * height) in symbols");
+        app.add_option("-t,--time", raw_arguments.time, "Which time fragment of the input file to convert");
+        app.add_option("-n,--name", raw_arguments.name, "Name of the video");
+        app.add_option("-d,--del", raw_arguments.delete_file, "Whether to delete video with specified name (name must be specified with '--name')");
+        app.add_option("-l,--list", raw_arguments.list_stored_files, "List all saved files");
+
+        CLI11_PARSE(app, argc, argv);
+        return 0;
+    }
+
+    EnvArguments& get_env_arguments(int argc, char** argv) {
         EnvArguments& env_arguments = env_arguments_ns::env_arguments;
+        RawArguments raw_arguments = RawArguments_default;
+
+        get_raw_arguments(raw_arguments, argc, argv);
 
         if (get_env("LIST_FILES") == "1") {
             // if user want to list files, no other work is done

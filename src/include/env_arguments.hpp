@@ -15,6 +15,18 @@ using StorageReader = storage_ns::StorageReader;
 #define DEFAULT_TIME {0, 10}
 
 namespace env_arguments_ns {
+    typedef struct RawArguments {
+        bool list_stored_files;
+        bool delete_file;
+        string name;
+        string path;
+        string fps;
+        string size;
+        string time;
+    } RawArguments;
+    const RawArguments RawArguments_default = {false, false, "", "", "2", "55x16", "0-10"};
+    int get_raw_arguments(RawArguments&, int argc, char** argv);
+
     class EnvArguments {
     public:
         // dedicated structure, that will store values of every arguments
@@ -38,5 +50,5 @@ namespace env_arguments_ns {
 
     void assert_path(string value);
 
-    EnvArguments& get_env_arguments();
+    EnvArguments& get_env_arguments(int, char**);
 }
