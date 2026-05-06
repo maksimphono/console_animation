@@ -22,9 +22,10 @@ find_package(Curses REQUIRED)
 # mytui.cpp is your source file
 add_executable(main src/storage.cpp src/env_arguments.cpp src/frames.cpp src/render.cpp src/main.cpp)
 
+#target_include_directories(main PRIVATE ${CURSES_INCLUDE_DIR})
 # Link the executable to the ncurses library
 # target_link_libraries links the 'mytui' executable with the found ncurses libraries
-target_link_libraries(main PRIVATE ${NCURSES_LIBRARIES})
+target_link_libraries(main PRIVATE ${CURSES_LIBRARIES})
 
 # Add include directories for ncurses (if find_package didn't handle it automatically, though it usually does)
 # target_include_directories(main PRIVATE ${NCURSES_INCLUDE_DIR})

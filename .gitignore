@@ -5,3 +5,7 @@ UML
 .devcontainer/*
 *jp2a*
 .vscode*
+./build
+*CMakeFiles*
+*CMakeCache*
+*.deleteme*
