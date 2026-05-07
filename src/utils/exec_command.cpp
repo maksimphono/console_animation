@@ -30,7 +30,7 @@ public:
         this->command_length = tokens.size();
         this->command_template = new char*[this->command_length];
         this->cmd_is_template = new bool[this->command_length];
-        this->command = new char*[this->command_length];
+        this->command = new char*[this->command_length + 1];
 
         for (uint8_t i = 0; i < this->command_length; i++) {
             this->cmd_is_template[i] = false;
@@ -48,12 +48,12 @@ public:
             } else {
                 this->command_template[i] = nullptr;
                 this->command[i] = new char[tokens[i].length() + 1];
-                cout << "qwr" << endl;
-                sprintf(this->command[i], tokens[i].c_str());
+                strcpy(this->command[i], tokens[i].c_str());
             }
             printf("%u ", this->cmd_is_template[i]);
-            //sprintf(this->command[i], "%s", );
         }
+        this->command[this->command_length] = nullptr;
+        this->buffer_size = buffer_size;
     }
 
 public:
@@ -63,7 +63,7 @@ public:
     }
     ~CommandExecutor() {
         for (uint8_t i = 0; i < this->command_length; i++) {
-            if (this->cmd_is_template)
+            if (this->cmd_is_template[i])
                 delete[] this->command_template[i];
             delete[] this->command[i];
         }
@@ -73,7 +73,7 @@ public:
 
     template <typename T=string>
     T exec_command(vector<char> bytes_in, ...) {
-        T result;
+        char* result = new char[4096];
         va_list args;
         int size = 0;
 
@@ -94,8 +94,8 @@ public:
         cout << endl;
 
         va_end(args);
-        /*
-        char* buffer = new char[buffer_size];
+
+        char* buffer = new char[this->buffer_size];
 
         int stdin_pipe[2], stdout_pipe[2];
         pipe(stdin_pipe);
@@ -106,13 +106,14 @@ public:
             dup2(stdin_pipe[0], STDIN_FILENO);
             dup2(stdout_pipe[1], STDOUT_FILENO);
 
-            perror("Child: ");
-            perror(command.c_str());
+            perror(this->command[0]);
             close(stdin_pipe[1]);
             close(stdout_pipe[0]);
 
-            execvp(command[0], command, NULL);
-            exit(1);
+            //write(STDOUT_FILENO, "qwert\0", 6);
+
+            execvp(this->command[0], this->command);
+            exit(0);
         }
 
         close(stdin_pipe[0]);
@@ -123,19 +124,22 @@ public:
         }
 
         close(stdin_pipe[1]);
+        /*
         if (!pipe) {
             std::cerr << "Error: popen() failed to execute command: " << command << std::endl;
             // TODO: throw an error
             return {};
         }
-        while (read(stdout_pipe[0], buffer, buffer_size * sizeof(buffer)) != 0) {
-            result.insert(result.end(), buffer, buffer + buffer_size);
+        */
+        while (read(stdout_pipe[0], buffer, this->buffer_size) != 0) {
+            write(1, buffer, this->buffer_size);
+            memset(buffer, 0, this->buffer_size);
         }
 
         close(stdout_pipe[0]);
-        
+
         delete[] buffer;
-        */
+
         return result;
     }
 };

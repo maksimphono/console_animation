@@ -4,10 +4,10 @@
 using namespace std;
 
 int main() {
-    CommandExecutor ex("ls %c /home %d:%s");
+    CommandExecutor ex("ls -%s /home", 4096);
 
-    ex.exec_command({}, 'l', 87, "qwerty");
+    string out = ex.exec_command({}, "la");
 
-    cout << ex.command_template[0] << endl;
+    //cout << out << endl;
     return 0;
 }
