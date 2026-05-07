@@ -5,15 +5,18 @@
 #include <vector>
 #include <sstream>
 #include <string.h>
+#include <stdarg.h>
 //#include <cstdio>
 
 using namespace std;
 
 class CommandExecutor {
 public:
-    char** command = NULL; // command, that will be executed
-    uint8_t command_length = 0;
+    char**  command_template = NULL; // command, that will be executed
+    uint8_t  command_template_length = 0;
     uint32_t buffer_size = 256;
+    uint8_t total_arg_number = 0;
+    uint8_t* args_per_cmd; // number of arguments (like %u or %s) for each command element
 
     void create_command_array(string command_template) {
         stringstream ss(command_template);
@@ -24,12 +27,19 @@ public:
             tokens.push_back(token);
         }
 
-        this->command_length = tokens.size();
-        this->command = new char*[this->command_length];
+        this-> command_template_length = tokens.size();
+        this-> command_template = new char*[this-> command_template_length];
+        this->args_per_cmd = new uint8_t[this-> command_template_length];
 
         for (uint8_t i = 0; i < tokens.size(); i++) {
-            this->command[i] = new char[tokens[i].length()];
-            strcpy(this->command[i], tokens[i].c_str());
+            this-> command_template[i] = new char[tokens[i].length()];
+            strcpy(this-> command_template[i], tokens[i].c_str());
+            this->args_per_cmd[i] = 0;
+            for (auto& sym : tokens[i]) {
+                if (sym == '%') this->args_per_cmd[i]++;
+            }
+            total_arg_number += this->args_per_cmd[i];
+            printf("%u ", this->args_per_cmd[i]);
             //sprintf(this->command[i], "%s", );
         }
     }
@@ -40,16 +50,37 @@ public:
         //cout << this->command[0] << endl;
     }
     ~CommandExecutor() {
-        for (uint8_t i = 0; i < this->command_length; i++) {
-            delete[] this->command[i];
+        for (uint8_t i = 0; i < this-> command_template_length; i++) {
+            delete[] this-> command_template[i];
         }
-        delete[] this->command;
+        delete[] this-> command_template;
     }
 
-    template <typename T>
-    static T exec_command(vector<char> bytes_in = {}) {
+    template <typename T=string>
+    T exec_command(vector<char> bytes_in, ...) {
         T result;
+        va_list args;
+        char** command = new char*[this->command_template_length];
 
+        va_start(args, bytes_in);
+
+        for (uint8_t i = 0; i < this->command_template_length; i++) {
+            if (this->args_per_cmd[i] > 0) {
+                command[i] = new char[128];
+                vsprintf(command[i], this->command_template[i], args);
+                //for (int j = 0; j < this->args_per_cmd[i]; j++) va_arg(args, char*);
+            } else {
+                command[i] = new char[strlen(this->command_template[i])];
+                sprintf(command[i], this->command_template[i]);
+            }
+        }
+
+        for (int i = 0; i < this->command_template_length; i++) {
+            cout << command[i] << " ";
+        }
+        cout << endl;
+
+        va_end(args);
         /*
         char* buffer = new char[buffer_size];
 
