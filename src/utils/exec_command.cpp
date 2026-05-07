@@ -13,11 +13,10 @@ using namespace std;
 class CommandExecutor {
 public:
     char** command_template = NULL; // command, that will be executed
-    uint8_t command_template_length = 0;
+    uint8_t command_length = 0;
     char** command = NULL;
     uint32_t buffer_size = 256;
-    uint8_t total_arg_number = 0;
-    uint8_t* args_per_cmd; // number of arguments (like %u or %s) for each command element
+    bool* cmd_is_template = nullptr;
 
     void create_command_array(string command_template) {
         stringstream ss(command_template);
@@ -28,26 +27,31 @@ public:
             tokens.push_back(token);
         }
 
-        this->command_template_length = tokens.size();
-        this->command_template = new char*[this->command_template_length];
-        this->args_per_cmd = new uint8_t[this->command_template_length];
-        this->command = new char*[this->command_template_length];
+        this->command_length = tokens.size();
+        this->command_template = new char*[this->command_length];
+        this->cmd_is_template = new bool[this->command_length];
+        this->command = new char*[this->command_length];
 
-        for (uint8_t i = 0; i < tokens.size(); i++) {
-            this->command_template[i] = new char[tokens[i].length()];
-            strcpy(this->command_template[i], tokens[i].c_str());
-            this->args_per_cmd[i] = 0;
+        for (uint8_t i = 0; i < this->command_length; i++) {
+            this->cmd_is_template[i] = false;
+
             for (auto& sym : tokens[i]) {
-                if (sym == '%') this->args_per_cmd[i]++;
+                if (sym == '%') {
+                    this->cmd_is_template[i] = true;
+                    break;
+                }
             }
-            if (this->args_per_cmd[i] == 0) {
-                this->command[i] = new char[strlen(this->command_template[i])];
-                sprintf(this->command[i], this->command_template[i]);
+            if (this->cmd_is_template[i]) {
+                this->command_template[i] = new char[tokens[i].length() + 1];
+                this->command[i] = new char[tokens[i].length() + 1]; 
+                strcpy(this->command_template[i], tokens[i].c_str());
             } else {
-                this->command[i] = new char[this->args_per_cmd[i]];
+                this->command_template[i] = nullptr;
+                this->command[i] = new char[tokens[i].length() + 1];
+                cout << "qwr" << endl;
+                sprintf(this->command[i], tokens[i].c_str());
             }
-            total_arg_number += this->args_per_cmd[i];
-            printf("%u ", this->args_per_cmd[i]);
+            printf("%u ", this->cmd_is_template[i]);
             //sprintf(this->command[i], "%s", );
         }
     }
@@ -58,8 +62,9 @@ public:
         //cout << this->command[0] << endl;
     }
     ~CommandExecutor() {
-        for (uint8_t i = 0; i < this->command_template_length; i++) {
-            delete[] this->command_template[i];
+        for (uint8_t i = 0; i < this->command_length; i++) {
+            if (this->cmd_is_template)
+                delete[] this->command_template[i];
             delete[] this->command[i];
         }
         delete[] this->command_template;
@@ -74,15 +79,15 @@ public:
 
         va_start(args, bytes_in);
 
-        for (uint8_t i = 0; i < this->command_template_length; i++) {
-            if (this->args_per_cmd[i] > 0) {
+        for (uint8_t i = 0; i < this->command_length; i++) {
+            if (this->cmd_is_template[i]) {
                 int size = snprintf(nullptr, 0, this->command_template[i], args); // count number of symbols if successfully written
                 realloc(this->command[i], size + 1);
                 vsprintf(this->command[i], this->command_template[i], args);
             }
         }
 
-        for (int i = 0; i < this->command_template_length; i++) {
+        for (int i = 0; i < this->command_length; i++) {
             cout << this->command[i] << " ";
         }
 

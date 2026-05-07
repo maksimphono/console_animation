@@ -4,7 +4,7 @@
 using namespace std;
 
 int main() {
-    CommandExecutor ex("ls -%c /home %u:%s");
+    CommandExecutor ex("ls %c /home %d:%s");
 
     ex.exec_command({}, 'l', 87, "qwerty");
 
