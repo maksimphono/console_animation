@@ -12,63 +12,55 @@
 namespace exec_command_ns{
     using namespace std;
     
+    typedef struct {
+        uint8_t idx;
+        string tmplt;
+    } idx_tmplt_pair_t;
+
     class CommandExecutor {
     private:
-        char** command_template = NULL; // command, that will be executed
+        vector<idx_tmplt_pair_t> command_templates; // command, that will be executed
         uint8_t command_length = 0;
         char** command = NULL;
         uint32_t buffer_size;
-        bool* cmd_is_template = nullptr;
 
-        void create_command_array(string command_template) {
-            stringstream ss(command_template);
+        void create_command_array(string command_templates) {
+            stringstream ss(command_templates);
             vector<string> tokens;
             string token;
+            bool cmd_is_template = false;
 
             while(ss >> token) {
                 tokens.push_back(token);
             }
 
             this->command_length = tokens.size();
-            this->command_template = new char*[this->command_length];
-            this->cmd_is_template = new bool[this->command_length];
             this->command = new char*[this->command_length + 1];
+            this->command_templates = {};
 
             for (uint8_t i = 0; i < this->command_length; i++) {
-                this->cmd_is_template[i] = false;
+                this->command[i] = new char[tokens[i].length() + 1];
+                strcpy(this->command[i], tokens[i].c_str());
 
                 for (auto& sym : tokens[i]) {
                     if (sym == '%') {
-                        this->cmd_is_template[i] = true;
+                        this->command_templates.push_back({i, tokens[i]});
                         break;
-                    }
+                    }z
                 }
-                if (this->cmd_is_template[i]) {
-                    this->command_template[i] = new char[tokens[i].length() + 1];
-                    this->command[i] = new char[tokens[i].length() + 1]; 
-                    strcpy(this->command_template[i], tokens[i].c_str());
-                } else {
-                    this->command_template[i] = nullptr;
-                    this->command[i] = new char[tokens[i].length() + 1];
-                    strcpy(this->command[i], tokens[i].c_str());
-                }
-                //printf("%u ", this->cmd_is_template[i]);
             }
-            this->command[this->command_length] = nullptr;
+            this->command[this->command_length] = nullptr; // null-terminated (for execvp)
         }
 
     public:
-        CommandExecutor(string command_template, uint32_t buffer_size = 256) {
+        CommandExecutor(string command_templates, uint32_t buffer_size = 256) {
             this->buffer_size = buffer_size;
-            this->create_command_array(command_template);
+            this->create_command_array(command_templates);
         }
         ~CommandExecutor() {
             for (uint8_t i = 0; i < this->command_length; i++) {
-                if (this->cmd_is_template[i])
-                    delete[] this->command_template[i];
                 delete[] this->command[i];
             }
-            delete[] this->command_template;
             delete[] this->command;
         }
 
@@ -79,12 +71,10 @@ namespace exec_command_ns{
 
             va_start(args, in_pipe);
 
-            for (uint8_t i = 0; i < this->command_length; i++) {
-                if (this->cmd_is_template[i]) {
-                    int size = snprintf(nullptr, 0, this->command_template[i], args); // count number of symbols if successfully written
-                    realloc(this->command[i], size + 1);
-                    vsprintf(this->command[i], this->command_template[i], args);
-                }
+            for (auto& pair : this->command_templates) {
+                int size = snprintf(nullptr, 0, pair.tmplt.c_str(), args); // count number of symbols if successfully written
+                realloc(this->command[pair.idx], size + 1);
+                vsprintf(this->command[pair.idx], pair.tmplt.c_str(), args);
             }
 
             va_end(args);

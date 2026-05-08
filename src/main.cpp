@@ -18,7 +18,9 @@ int main() {
     CommandExecutor ls("ls -%s %s", 4096);
     CommandExecutor wc("wc -%s", 4096);
 
-    int p = ls.exec<Pipe>(-9, "la", "/home");
+
+
+    int p = ls.exec<Pipe>(-9, "la", "/home/build");
     C c = wc.exec<C>(p, "l");
 
     cout << c.s;
