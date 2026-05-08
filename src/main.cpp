@@ -9,8 +9,8 @@ int main() {
     CommandExecutor ls("ls -%s %s", 4096);
     CommandExecutor wc("wc -%s", 4096);
 
-    int p = ls.exec_command<Pipe>(-9, "la", "/home");
-    string out = wc.exec_command<string>(p, "l");
+    int p = ls.exec<Pipe>(-9, "la", "/home");
+    string out = wc.exec<string>(p, "l");
 
     cout << out;
     return 0;

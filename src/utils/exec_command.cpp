@@ -72,7 +72,7 @@ public:
     }
 
     template <typename T=string>
-    T exec_command(int in_pipe = -9, ...) {
+    T exec(int in_pipe = -9, ...) {
         va_list args;
         int size = 0;
 
@@ -143,7 +143,7 @@ public:
             // if pipe output is required
             return stdout_pipe[0];
         } else {
-            
+
         }
             
     }
