@@ -58,6 +58,7 @@ namespace exec_command_ns{
             this->create_command_array(command_templates);
         }
         ~CommandExecutor() {
+            //cout << "delete" << endl;
             for (uint8_t i = 0; i < this->command_length; i++) {
                 delete[] this->command[i];
             }
@@ -98,17 +99,18 @@ namespace exec_command_ns{
                 stdin_pipe[0] = in_pipe;
 
             pipe(stdout_pipe);
-
+            /*
             for (int i = 0; i < this->command_length; i++)
                 cout << this->command[i] << " ";
             cout << endl;
+            */
 
             pid_t pid = fork();
             if (pid == 0) {
                 dup2(stdin_pipe[0], STDIN_FILENO);
                 dup2(stdout_pipe[1], STDOUT_FILENO);
 
-                perror(this->command[0]);
+                //perror(this->command[0]);
                 close(stdin_pipe[1]);
                 close(stdout_pipe[0]);
 
@@ -132,7 +134,6 @@ namespace exec_command_ns{
                 memset(buffer, 0, this->buffer_size);
 
                 while (read(stdout_pipe[0], buffer, this->buffer_size) != 0) {
-                    cout << "qwerrtttt" << endl;
                     result += buffer;
                     memset(buffer, 0, this->buffer_size);
                 }
