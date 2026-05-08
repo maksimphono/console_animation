@@ -71,13 +71,13 @@ public:
         delete[] this->command;
     }
 
-    template <typename T=string>
-    T exec_command(vector<char> bytes_in, ...) {
+    //template <typename T=string>
+    int exec_command(int in_pipe = -9, ...) {
         char* result = new char[4096];
         va_list args;
         int size = 0;
 
-        va_start(args, bytes_in);
+        va_start(args, in_pipe);
 
         for (uint8_t i = 0; i < this->command_length; i++) {
             if (this->cmd_is_template[i]) {
@@ -98,7 +98,12 @@ public:
         char* buffer = new char[this->buffer_size];
 
         int stdin_pipe[2], stdout_pipe[2];
-        pipe(stdin_pipe);
+        
+        if (in_pipe == -9)
+            pipe(stdin_pipe);
+        else
+            stdin_pipe[0] = in_pipe;
+
         pipe(stdout_pipe);
 
         pid_t pid = fork();
@@ -119,9 +124,11 @@ public:
         close(stdin_pipe[0]);
         close(stdout_pipe[1]);
 
+        /*
         if (!bytes_in.empty()) {
             write(stdin_pipe[1], bytes_in.data(), buffer_size * sizeof(bytes_in[0]));
         }
+        */
 
         close(stdin_pipe[1]);
         /*
@@ -131,16 +138,12 @@ public:
             return {};
         }
         */
-        while (read(stdout_pipe[0], buffer, this->buffer_size) != 0) {
-            write(1, buffer, this->buffer_size);
-            memset(buffer, 0, this->buffer_size);
-        }
 
-        close(stdout_pipe[0]);
+        //close(stdout_pipe[0]);
 
         delete[] buffer;
 
-        return result;
+        return stdout_pipe[0];
     }
 };
 
