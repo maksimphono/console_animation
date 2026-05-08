@@ -71,9 +71,8 @@ public:
         delete[] this->command;
     }
 
-    //template <typename T=string>
-    int exec_command(int in_pipe = -9, ...) {
-        char* result = new char[4096];
+    template <typename T=string>
+    T exec_command(int in_pipe = -9, ...) {
         va_list args;
         int size = 0;
 
@@ -94,8 +93,6 @@ public:
         cout << endl;
 
         va_end(args);
-
-        char* buffer = new char[this->buffer_size];
 
         int stdin_pipe[2], stdout_pipe[2];
         
@@ -124,26 +121,31 @@ public:
         close(stdin_pipe[0]);
         close(stdout_pipe[1]);
 
-        /*
-        if (!bytes_in.empty()) {
-            write(stdin_pipe[1], bytes_in.data(), buffer_size * sizeof(bytes_in[0]));
-        }
-        */
-
         close(stdin_pipe[1]);
-        /*
-        if (!pipe) {
-            std::cerr << "Error: popen() failed to execute command: " << command << std::endl;
-            // TODO: throw an error
-            return {};
+
+        if constexpr (is_same_v<T, string>) {
+            // if string output is required
+            string result = "";
+
+            char* buffer = new char[this->buffer_size];
+            memset(buffer, 0, this->buffer_size);
+
+            while (read(stdout_pipe[0], buffer, this->buffer_size) != 0) {
+                result += buffer;
+                memset(buffer, 0, this->buffer_size);
+            }
+
+            close(stdout_pipe[0]);
+            delete[] buffer;
+            return result;
         }
-        */
-
-        //close(stdout_pipe[0]);
-
-        delete[] buffer;
-
-        return stdout_pipe[0];
+        else if constexpr (is_same_v<T, int>) {
+            // if pipe output is required
+            return stdout_pipe[0];
+        } else {
+            
+        }
+            
     }
 };
 

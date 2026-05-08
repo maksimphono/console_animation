@@ -3,23 +3,15 @@
 
 using namespace std;
 
+typedef int Pipe;
+
 int main() {
     CommandExecutor ls("ls -%s %s", 4096);
     CommandExecutor wc("wc -%s", 4096);
 
-    int p = ls.exec_command(-9, "la", "/home");
-    p = wc.exec_command(p, "l");
+    int p = ls.exec_command<Pipe>(-9, "la", "/home");
+    string out = wc.exec_command<string>(p, "l");
 
-    char* buffer = new char[256];
-    memset(buffer, 0, 256);
-
-    while (read(p, buffer, 256) != 0) {
-        write(1, buffer, 256);
-        memset(buffer, 0, 256);
-    }
-
-    close(p);
-
-    //cout << out << endl;
+    cout << out;
     return 0;
 }
