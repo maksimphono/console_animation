@@ -15,14 +15,16 @@ public:
 };
 
 int main() {
-    CommandExecutor ls("ls -%s %s", 4096);
-    CommandExecutor wc("wc -%s", 4096);
+    CommandExecutor ff("ffmpeg -loglevel -8 -ss %d:%d:%d.000 -i %s -frames:v 1 -f image2pipe -", 4096);
+    CommandExecutor jp("jp2a - --size=%dx%d", 4096);
 
+    //cout << ff.command_templates.at(ff.command_templates.size() - 1).tmplt << endl;
 
+    //string s = ff.exec<string>(-9, 0, 0, 2, "/home/Rick.mp4");
+    //int p = ff.exec<int>(-9, 0, 0, 2, "/home/Rick.mp4");
+    int p = ff.exec<int>(-9, 0, 0, 2, "/home/build/Rick Astle Never Gonna give you up (Full version).mp4");
+    string s = jp.exec<string>(p, 70, 30);
 
-    int p = ls.exec<Pipe>(-9, "la", "/home/build");
-    C c = wc.exec<C>(p, "l");
-
-    cout << c.s;
+    cout << s;
     return 0;
 }

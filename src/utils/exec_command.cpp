@@ -18,7 +18,7 @@ namespace exec_command_ns{
     } idx_tmplt_pair_t;
 
     class CommandExecutor {
-    private:
+    public:
         vector<idx_tmplt_pair_t> command_templates; // command, that will be executed
         uint8_t command_length = 0;
         char** command = NULL;
@@ -46,7 +46,7 @@ namespace exec_command_ns{
                     if (sym == '%') {
                         this->command_templates.push_back({i, tokens[i]});
                         break;
-                    }z
+                    }
                 }
             }
             this->command[this->command_length] = nullptr; // null-terminated (for execvp)
@@ -61,21 +61,32 @@ namespace exec_command_ns{
             for (uint8_t i = 0; i < this->command_length; i++) {
                 delete[] this->command[i];
             }
+            //cout << endl;
             delete[] this->command;
         }
 
         template <typename T=string>
         T exec(int in_pipe = -9, ...) {
-            va_list args;
+            va_list args, args_cpy;
             int size = 0;
 
             va_start(args, in_pipe);
 
             for (auto& pair : this->command_templates) {
-                int size = snprintf(nullptr, 0, pair.tmplt.c_str(), args); // count number of symbols if successfully written
-                realloc(this->command[pair.idx], size + 1);
-                vsprintf(this->command[pair.idx], pair.tmplt.c_str(), args);
+                va_copy(args_cpy, args);
+                int size = vsnprintf(nullptr, 0, pair.tmplt.c_str(), args); // count number of symbols if successfully written
+
+                // can't figure out how to reallocate space here, so just deleting and allocating again
+                if (size > strlen(this->command[pair.idx])) {
+                    char* tmp = new char[size + 1];
+                    memset(tmp, 0, size + 1);
+                    delete[] this->command[pair.idx];
+                    this->command[pair.idx] = tmp;
+                }
+
+                vsprintf(this->command[pair.idx], pair.tmplt.c_str(), args_cpy);
             }
+            va_end(args_cpy);
 
             va_end(args);
 
@@ -88,6 +99,10 @@ namespace exec_command_ns{
 
             pipe(stdout_pipe);
 
+            for (int i = 0; i < this->command_length; i++)
+                cout << this->command[i] << " ";
+            cout << endl;
+
             pid_t pid = fork();
             if (pid == 0) {
                 dup2(stdin_pipe[0], STDIN_FILENO);
@@ -96,8 +111,6 @@ namespace exec_command_ns{
                 perror(this->command[0]);
                 close(stdin_pipe[1]);
                 close(stdout_pipe[0]);
-
-                //write(STDOUT_FILENO, "qwert\0", 6);
 
                 execvp(this->command[0], this->command);
                 exit(0);
@@ -119,6 +132,7 @@ namespace exec_command_ns{
                 memset(buffer, 0, this->buffer_size);
 
                 while (read(stdout_pipe[0], buffer, this->buffer_size) != 0) {
+                    cout << "qwerrtttt" << endl;
                     result += buffer;
                     memset(buffer, 0, this->buffer_size);
                 }
