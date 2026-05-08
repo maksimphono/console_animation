@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string.h>
 #include <stdarg.h>
+#include <sys/wait.h>
 //#include <cstdio>
 
 //#include "include/exception.hpp"
@@ -23,6 +24,7 @@ namespace exec_command_ns{
         uint8_t command_length = 0;
         char** command = NULL;
         uint32_t buffer_size;
+        pid_t pid = 0;
 
         void create_command_array(string command_templates) {
             stringstream ss(command_templates);
@@ -53,7 +55,7 @@ namespace exec_command_ns{
         }
 
     public:
-        CommandExecutor(string command_templates, uint32_t buffer_size = 256) {
+        CommandExecutor(string command_templates, uint32_t buffer_size = 256, bool parallel = false) {
             this->buffer_size = buffer_size;
             this->create_command_array(command_templates);
         }
@@ -64,6 +66,13 @@ namespace exec_command_ns{
             }
             //cout << endl;
             delete[] this->command;
+            this->wait();
+        }
+
+        int wait() {
+            int status;
+            waitpid(this->pid, &status, 0);
+            return status;
         }
 
         template <typename T=string>
@@ -99,13 +108,9 @@ namespace exec_command_ns{
                 stdin_pipe[0] = in_pipe;
 
             pipe(stdout_pipe);
-            /*
-            for (int i = 0; i < this->command_length; i++)
-                cout << this->command[i] << " ";
-            cout << endl;
-            */
 
             pid_t pid = fork();
+            this->pid = pid;
             if (pid == 0) {
                 dup2(stdin_pipe[0], STDIN_FILENO);
                 dup2(stdout_pipe[1], STDOUT_FILENO);
@@ -139,7 +144,11 @@ namespace exec_command_ns{
                 }
 
                 close(stdout_pipe[0]);
+
+                // waiting for all the child processes to prevent zombies
+
                 delete[] buffer;
+
                 if constexpr (is_same_v<T, string>)
                     // if string output is required
                     return result;

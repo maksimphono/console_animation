@@ -50,13 +50,16 @@ namespace frames_ns {
     //exec_command_ns::CommandExecutor command_template("ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 %s");
 
     Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
-        exec_command_ns::CommandExecutor pick_frame_command_template("ffmpeg -loglevel -8 -ss %d:%d:%d.%d -i %s -frames:v 1 -f image2pipe -", 1024);
-        exec_command_ns::CommandExecutor convert_frame_command_template("jp2a - --size=%dx%d", 1024);
+        exec_command_ns::CommandExecutor pick_frame_command_template("ffmpeg -loglevel -8 -ss %d:%d:%d.%d -i %s -frames:v 1 -f image2pipe -", 4096);
+        exec_command_ns::CommandExecutor convert_frame_command_template("jp2a - --size=%dx%d", 4096);
         string output = "";
         int p = -9;
 
         p = pick_frame_command_template.exec<int>(p, ts.hours, ts.minutes, ts.seconds, ts.miliseconds, path.c_str());
         output = convert_frame_command_template.exec<string>(p, size[0], size[1]);
+
+        pick_frame_command_template.wait();
+        convert_frame_command_template.wait();
 
         if (output.length() != (size[0] + 1) * size[1]) {
             THROW_JP2A_PROGRAM_ISSUE_EXP;
@@ -69,6 +72,7 @@ namespace frames_ns {
         exec_command_ns::CommandExecutor command_template("ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 %s");
         double duration = 0;
         const string output = command_template.exec<string>(-9, path.c_str());
+        command_template.wait();
 
         if (output.length() == 0) {
             THROW_VIDEO_DURATION_EXP;
