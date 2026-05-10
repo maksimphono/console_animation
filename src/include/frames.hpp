@@ -43,19 +43,23 @@ namespace frames_ns {
         uint16_t len = 0;
         string body = ""; // flat array, that contains all symbols of the frame
         uint8_t size[2] = {};
+        uint32_t time = 0;
     public:
         Frame() {}
-        Frame(string& chars, uint8_t size[2]){
+        Frame(string& chars, uint8_t size[2], uint32_t time = 0){
             this->len = (uint16_t)(size[0] + 1) * (uint16_t)size[1];
             this->body = string(chars);
+            this->time = time;
         }
-        Frame(char* chars, uint8_t size[2]){
+        Frame(char* chars, uint8_t size[2], uint32_t time = 0){
             this->len = (uint16_t)(size[0] + 1) * (uint16_t)size[1];
             this->body = string(chars);
+            this->time = time;
         }
-        void set(string& chars, uint8_t size[2]) {
+        void set(string& chars, uint8_t size[2], uint32_t time = 0) {
             this->len = (uint16_t)(size[0] + 1) * (uint16_t)size[1];
-            this->body = string(chars);
+            this->body = chars;
+            this->time = time;
         }
     };
 

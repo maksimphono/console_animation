@@ -50,7 +50,7 @@ namespace frames_ns {
     //exec_command_ns::CommandExecutor command_template("ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 %s");
 
     Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
-        exec_command_ns::CommandExecutor pick_frame_command_template("ffmpeg -loglevel -8 -ss %d:%d:%d.%d -i %s -frames:v 1 -f image2pipe -", 4096);
+        exec_command_ns::CommandExecutor pick_frame_command_template("ffmpeg -loglevel -8 -ss %d:%d:%d.%03d -i %s -frames:v 1 -f image2pipe -", 4096);
         exec_command_ns::CommandExecutor convert_frame_command_template("jp2a - --size=%dx%d", 4096);
         string output = "";
         int p = -9;
@@ -65,7 +65,7 @@ namespace frames_ns {
             THROW_JP2A_PROGRAM_ISSUE_EXP;
         }
 
-        return Frame(output, size);
+        return Frame(output, size, ts.time);
     }
 
     uint32_t get_video_duration(string& path) {
