@@ -15,6 +15,8 @@ using ThreadPool = threadpool_ns::ThreadPool;
 
 #define TEMP_PATH "./.frames.deleteme"
 
+#define READ_BUF_SIZE 4096
+
 namespace frames_ns {
     vector<Frame> _frames; // array, that holds all the frames
 
@@ -45,13 +47,9 @@ namespace frames_ns {
         return format("{0}h{1}m{2}s{3}ms", this->hours, this->minutes, this->seconds, this->miliseconds);
     }
 
-    //exec_command_ns::CommandExecutor pick_frame_command_template("ffmpeg -loglevel -8 -ss %d:%d:%d.%d -i %s -frames:v 1 -f image2pipe -", 1024);
-    //exec_command_ns::CommandExecutor convert_frame_command_template("jp2a - --size=%dx%d", 1024);
-    //exec_command_ns::CommandExecutor command_template("ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 %s");
-
     Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
-        exec_command_ns::CommandExecutor pick_frame_command_template("ffmpeg -loglevel -8 -ss %d:%d:%d.%03d -i %s -frames:v 1 -f image2pipe -", 4096);
-        exec_command_ns::CommandExecutor convert_frame_command_template("jp2a - --size=%dx%d", 4096);
+        exec_command_ns::CommandExecutor pick_frame_command_template("ffmpeg -loglevel -8 -ss %d:%d:%d.%03d -i %s -frames:v 1 -f image2pipe -", READ_BUF_SIZE);
+        exec_command_ns::CommandExecutor convert_frame_command_template("jp2a - --size=%dx%d", READ_BUF_SIZE);
         string output = "";
         int p = -9;
 

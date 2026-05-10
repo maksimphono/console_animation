@@ -135,11 +135,12 @@ namespace exec_command_ns{
             else {
                 string result = "";
 
+                ssize_t read_size = 0;
                 char* buffer = new char[this->buffer_size];
                 memset(buffer, 0, this->buffer_size);
 
-                while (read(stdout_pipe[0], buffer, this->buffer_size) != 0) {
-                    result += buffer;
+                while ((read_size = read(stdout_pipe[0], buffer, this->buffer_size)) > 0) {
+                    result.append(buffer, read_size);
                     memset(buffer, 0, this->buffer_size);
                 }
 
