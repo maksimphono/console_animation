@@ -3,6 +3,7 @@
 #include <exception>
 #include <format>
 #include <cstring>
+#include <thread>
 
 #include "include/env_arguments.hpp"
 #include "include/storage.hpp"
@@ -16,7 +17,7 @@ namespace env_arguments_ns {
     EnvArguments env_arguments;
 
     static const string empty = "";
-    static RawArguments default_arguments = {false, false, false, "", "", "2", "55x16", "0-10"};
+    static RawArguments default_arguments = {false, false, false, "", "", "2", "55x16", "0-10", thread::hardware_concurrency()};
 
     void assert_path(string value) {
         regex pattern("^((/|.|..)[^/\\0]+)*(/)?$");
@@ -88,6 +89,11 @@ namespace env_arguments_ns {
         this->name = raw_name;
     }
 
+    void EnvArguments::set_cores(unsigned int cores){
+        this->cores = min(cores, thread::hardware_concurrency());
+        cout << this->cores << endl;
+    }
+
     int get_raw_arguments(RawArguments& raw_arguments, int argc, char** argv){
         CLI::App app{"Simple program, that can convert video file into ASCII animation and play it in the terminal"};
         argv = app.ensure_utf8(argv);
@@ -100,7 +106,8 @@ namespace env_arguments_ns {
         app.add_option("-s,--size", raw_arguments.size, "Size of the resulting video (width * height) in symbols");
         app.add_option("-t,--time", raw_arguments.time, "Which time fragment of the input file to convert");
         app.add_option("-n,--name", raw_arguments.name, "Name of the video");
-        
+        app.add_option<unsigned int>("-c,--cores", raw_arguments.cores, "Number of CPU cores to use when converting the videofile (all available cores are used by default)");
+
         CLI11_PARSE(app, argc, argv);
         return 0;
     }
@@ -130,6 +137,7 @@ namespace env_arguments_ns {
             env_arguments.set_fps(raw_arguments.fps);
             env_arguments.set_size(raw_arguments.size);
             env_arguments.set_time(raw_arguments.time);
+            env_arguments.set_cores(raw_arguments.cores);
         }
 
         return env_arguments;
