@@ -131,6 +131,13 @@ namespace storage_ns {
             THROW_CANT_DELETE_FILE_EXP;
     }
 
+    uint32_t write_to_stdout(vector<Frame>& frames, EnvArguments& arguments) {
+        StorageWriter writer("stdout.txt");
+
+        writer.write_metadata(arguments);
+        return writer.write_frames(frames);
+    }
+
     uint32_t save_file(string name, vector<Frame>& frames, EnvArguments& arguments) {
         storage_ns::init_storage_path();
         if (fs::exists(storage_ns::storage_path) == false)

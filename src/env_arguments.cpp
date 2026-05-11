@@ -16,7 +16,7 @@ namespace env_arguments_ns {
     EnvArguments env_arguments;
 
     static const string empty = "";
-    static RawArguments default_arguments = {false, false, "", "", "2", "55x16", "0-10"};
+    static RawArguments default_arguments = {false, false, false, "", "", "2", "55x16", "0-10"};
 
     void assert_path(string value) {
         regex pattern("^((/|.|..)[^/\\0]+)*(/)?$");
@@ -94,6 +94,7 @@ namespace env_arguments_ns {
 
         app.add_flag("-d,--del", raw_arguments.delete_file, "Whether to delete video with specified name (name must be specified with '--name')");
         app.add_flag("-l,--list", raw_arguments.list_stored_files, "List all saved files");
+        app.add_flag("-o,--out", raw_arguments.write_to_stdout, "Write resulting frames into stdout");
         app.add_option("-i,--input", raw_arguments.path, "Path to input file");
         app.add_option("-f,--fps", raw_arguments.fps, "FPS");
         app.add_option("-s,--size", raw_arguments.size, "Size of the resulting video (width * height) in symbols");
@@ -110,6 +111,7 @@ namespace env_arguments_ns {
 
         get_raw_arguments(raw_arguments, argc, argv);
 
+        env_arguments.write_to_stdout = raw_arguments.write_to_stdout;
         if (raw_arguments.list_stored_files) {
             // if user want to list files, no other work is done
             env_arguments.list_stored_files = true;

@@ -21,7 +21,10 @@ int main(int argc, char* argv[]) {
             storage_ns::list_all_files(cout);
         } else {
             vector<frames_ns::Frame> frames = frames_ns::create_frames(env_arguments);
-            render_ns::render(frames, env_arguments);
+            if (env_arguments.write_to_stdout)
+                storage_ns::write_to_stdout(frames, env_arguments);
+            else
+                render_ns::render(frames, env_arguments);
         }
     } catch (const exception& exp) {
         cerr << exp.what() << endl;

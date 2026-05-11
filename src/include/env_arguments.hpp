@@ -40,6 +40,7 @@ namespace env_arguments_ns {
     typedef struct RawArguments {
         bool list_stored_files;
         bool delete_file;
+        bool write_to_stdout;
         string name;
         string path;
         string fps;
@@ -58,6 +59,7 @@ namespace env_arguments_ns {
         bool loaded_from_file = false;
         bool list_stored_files = false;
         bool delete_file = false;
+        bool write_to_stdout = false;
 
         EnvArguments() {}
 

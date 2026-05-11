@@ -85,6 +85,8 @@ namespace storage_ns {
 
     void delete_file(string name);
 
+    uint32_t write_to_stdout(vector<Frame>& frames, EnvArguments& arguments);
+
     uint32_t save_file(string name, vector<Frame>& frames, EnvArguments& arguments);
     // saves the sequence of frames along with specific arguments to a new file
 
