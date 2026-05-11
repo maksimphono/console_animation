@@ -14,8 +14,8 @@ namespace storage_ns {
     }
 
     template <typename T = string>
-    uint32_t StorageWriter::write_metadata_entry(const char* name, T value) {
-        this->strm << name << "=" << value << ";";
+    uint32_t Writer::write_metadata_entry(const char* name, T value) {
+        this->get_stream() << name << "=" << value << ";";
         return 1;
     }
 
@@ -43,13 +43,6 @@ namespace storage_ns {
             n++;
         }
         return n;
-    }
-
-
-    template <typename T = string>
-    uint32_t StreamWriter::write_metadata_entry(const char* name, T value) {
-        this->strm << name << "=" << value << ";";
-        return 1;
     }
 
     uint32_t StreamWriter::write_metadata(EnvArguments& arguments) {

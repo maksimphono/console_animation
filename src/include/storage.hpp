@@ -48,12 +48,16 @@ namespace storage_ns {
     class Writer {
     public:
         virtual ~Writer() = default;
+        template <typename T>
+        uint32_t write_metadata_entry(const char* name, T value);
 
         virtual uint32_t write_metadata(EnvArguments& arguments) = 0;
         // returns number of items written
 
         virtual uint32_t write_frames(vector<Frame>& frames) = 0;
         // returns number of frames written
+    protected:
+        virtual ostream& get_stream() = 0;
     };
 
     class StorageWriter : public Writer {
@@ -62,12 +66,13 @@ namespace storage_ns {
     public:
         StorageWriter(string name) : strm(create_path(name)) {}
         ~StorageWriter() {this->strm.close();}
-        template <typename T>
-        uint32_t write_metadata_entry(const char* name, T value);
 
         uint32_t write_metadata(EnvArguments& arguments) override;
 
         uint32_t write_frames(vector<Frame>& frames) override;
+
+    protected:
+        ostream& get_stream() override {return this->strm;}
     };
 
     class StreamWriter : public Writer {
@@ -76,14 +81,14 @@ namespace storage_ns {
     public:
         StreamWriter(ostream& stream) : strm(stream) {}
         ~StreamWriter() {this->flush();}
-        template <typename T>
-        uint32_t write_metadata_entry(const char* name, T value);
 
         uint32_t write_metadata(EnvArguments& arguments) override;
 
         uint32_t write_frames(vector<Frame>& frames) override;
 
         void flush();
+    protected:
+        ostream& get_stream() override {return this->strm;}
     };
 
 
