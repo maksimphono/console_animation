@@ -73,14 +73,11 @@ namespace frames_ns {
         Timestamp(uint8_t h, uint8_t m, uint8_t s, uint16_t ms);
         Timestamp(uint32_t time_ms = 0);
         void inc(uint16_t ms);
-        string to_string();
     };
 
     Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]);
 
     uint32_t get_video_duration(string& path);
-
-    void cleanup();
 
     vector<Frame>& create_frames_from_video(EnvArguments&);
 

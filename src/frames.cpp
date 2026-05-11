@@ -13,8 +13,6 @@ namespace fs = std::filesystem;
 using namespace std;
 using ThreadPool = threadpool_ns::ThreadPool;
 
-#define TEMP_PATH "./.frames.deleteme"
-
 #define READ_BUF_SIZE 4096
 
 namespace frames_ns {
@@ -41,10 +39,6 @@ namespace frames_ns {
         this->seconds = (this->time / 1000) % 60;
         this->minutes = (this->time / 60000) % 60;
         this->hours = this->time / 3600000;
-    }
-
-    string Timestamp::to_string() {
-        return format("{0}h{1}m{2}s{3}ms", this->hours, this->minutes, this->seconds, this->miliseconds);
     }
 
     Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
@@ -81,15 +75,6 @@ namespace frames_ns {
         return static_cast<uint32_t>(duration * 1000); // duration in miliseconds
     }
 
-    void cleanup() {
-        if (check_path(TEMP_PATH)) {
-            for (const auto& file : fs::directory_iterator(TEMP_PATH)) {
-                if (fs::is_regular_file(file.status()))
-                    fs::remove(file.path());
-            }
-        }
-    }
-
     vector<Frame>& create_frames_from_video(EnvArguments& arguments) {
         vector<Frame>& frames = _frames;
 
@@ -113,17 +98,11 @@ namespace frames_ns {
         video_start_time = (time[0] * 1000 > video_end_time)?(video_end_time - 2000):(time[0] * 1000);
 
         Timestamp ts(video_start_time);
-        ThreadPool pool(std::thread::hardware_concurrency());
+        ThreadPool pool(std::thread::hardware_concurrency() - 1);
 
         queue<future<Frame>> futures;
 
         frames.clear();
-
-        if (check_path(TEMP_PATH)) {
-            cleanup();
-        } else {
-            fs::create_directory(TEMP_PATH);
-        }
 
         while (ts.time < video_end_time) {
             futures.push(pool.submit(pick_frame, arguments.path, ts, arguments.size));
