@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <future>
+#include <sched.h>
 
 #include <thread>
 #include <queue>
@@ -38,6 +39,8 @@ using EnvArguments = env_arguments_ns::EnvArguments;
 namespace frames_ns {
     
     DEFINE_EXCEPTION_CLASS(FramesException, "Somthing went wrong with frames creation");
+    void limit_to_cores(int num_cores);
+
     class Frame {
     public:
         uint16_t len = 0;
@@ -74,6 +77,8 @@ namespace frames_ns {
         Timestamp(uint32_t time_ms = 0);
         void inc(uint16_t ms);
     };
+
+    void limit_to_cores(uint32_t num_cores);
 
     Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]);
 

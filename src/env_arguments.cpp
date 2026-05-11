@@ -91,7 +91,6 @@ namespace env_arguments_ns {
 
     void EnvArguments::set_cores(unsigned int cores){
         this->cores = min(cores, thread::hardware_concurrency());
-        cout << this->cores << endl;
     }
 
     int get_raw_arguments(RawArguments& raw_arguments, int argc, char** argv){

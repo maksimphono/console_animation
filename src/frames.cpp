@@ -41,6 +41,21 @@ namespace frames_ns {
         this->hours = this->time / 3600000;
     }
 
+    void limit_to_cores(uint32_t num_cores) {
+        cpu_set_t mask;
+        CPU_ZERO(&mask);
+
+        // Allow the program to use only the first 'num_cores'
+        for (uint32_t i = 0; i < num_cores; i++) {
+            CPU_SET(i, &mask);
+        }
+
+        // Set affinity for the current process
+        if (sched_setaffinity(0, sizeof(mask), &mask) == -1) {
+            perror("sched_setaffinity failed");
+        }
+    }
+
     Frame pick_frame(string& path, Timestamp& ts, uint8_t size[2]) {
         exec_command_ns::CommandExecutor pick_frame_command_template("ffmpeg -loglevel -8 -ss %d:%d:%d.%03d -i %s -frames:v 1 -f image2pipe -", READ_BUF_SIZE);
         exec_command_ns::CommandExecutor convert_frame_command_template("jp2a - --size=%dx%d", READ_BUF_SIZE);
@@ -98,7 +113,8 @@ namespace frames_ns {
         video_start_time = (time[0] * 1000 > video_end_time)?(video_end_time - 2000):(time[0] * 1000);
 
         Timestamp ts(video_start_time);
-        ThreadPool pool(std::thread::hardware_concurrency() - 1);
+        limit_to_cores(arguments.cores);
+        ThreadPool pool(arguments.cores);
 
         queue<future<Frame>> futures;
 
