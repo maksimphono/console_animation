@@ -15,33 +15,68 @@ namespace storage_ns {
 
     template <typename T = string>
     uint32_t StorageWriter::write_metadata_entry(const char* name, T value) {
-        *this << name << "=" << value << ";";
+        this->strm << name << "=" << value << ";";
         return 1;
     }
 
     uint32_t StorageWriter::write_metadata(EnvArguments& arguments) {
         // returns number of items written
         uint32_t n = 0;
-        if (!this->is_open()) return 0;
+        if (!this->strm.is_open()) return 0;
 
-        this->seekp(0);
+        this->strm.seekp(0);
         n += this->write_metadata_entry<int>("FPS", (int)arguments.fps);
         n += this->write_metadata_entry("SIZE", format("{0}x{1}", arguments.size[0], arguments.size[1]));
         n += this->write_metadata_entry("TIME", format("{0}-{1}", arguments.time[0], arguments.time[1]));
 
-        *this << endl;
+        this->strm << endl;
         return n;
     }
 
     uint32_t StorageWriter::write_frames(vector<Frame>& frames) {
         // returns number of frames written
         uint32_t n = 0;
+        if (!this->strm.is_open()) return 0;
 
         for (auto& frame : frames) {
-            *this << frame.body;
+            this->strm << frame.body;
             n++;
         }
         return n;
+    }
+
+
+    template <typename T = string>
+    uint32_t StreamWriter::write_metadata_entry(const char* name, T value) {
+        this->strm << name << "=" << value << ";";
+        return 1;
+    }
+
+    uint32_t StreamWriter::write_metadata(EnvArguments& arguments) {
+        // returns number of items written
+        uint32_t n = 0;
+
+        n += this->write_metadata_entry<int>("FPS", (int)arguments.fps);
+        n += this->write_metadata_entry("SIZE", format("{0}x{1}", arguments.size[0], arguments.size[1]));
+        n += this->write_metadata_entry("TIME", format("{0}-{1}", arguments.time[0], arguments.time[1]));
+
+        this->strm << endl;
+        return n;
+    }
+
+    uint32_t StreamWriter::write_frames(vector<Frame>& frames) {
+        // returns number of frames written
+        uint32_t n = 0;
+
+        for (auto& frame : frames) {
+            this->strm << frame.body;
+            n++;
+        }
+        this->flush();
+        return n;
+    }
+    void StreamWriter::flush() {
+        this->strm.flush();
     }
 
     string StorageReader::read_metadata_line() {
@@ -132,7 +167,7 @@ namespace storage_ns {
     }
 
     uint32_t write_to_stdout(vector<Frame>& frames, EnvArguments& arguments) {
-        StorageWriter writer("stdout.txt");
+        StreamWriter writer(std::cout);
 
         writer.write_metadata(arguments);
         return writer.write_frames(frames);

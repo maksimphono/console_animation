@@ -45,22 +45,45 @@ namespace storage_ns {
 
     fs::path create_path(string& name);
 
-    class StorageWriter : public ofstream {
-    protected:
-        template <typename T>
-        uint32_t write_metadata_entry(const char* name, T value);
+    class Writer {
     public:
-        StorageWriter(string name) : ofstream(create_path(name)) {
-        }
-        ~StorageWriter() {
-            this->close();
-        }
+        virtual ~Writer() = default;
 
-        uint32_t write_metadata(EnvArguments& arguments);
+        virtual uint32_t write_metadata(EnvArguments& arguments) = 0;
         // returns number of items written
 
-        uint32_t write_frames(vector<Frame>& frames);
+        virtual uint32_t write_frames(vector<Frame>& frames) = 0;
         // returns number of frames written
+    };
+
+    class StorageWriter : public Writer {
+    private:
+        ofstream strm;
+    public:
+        StorageWriter(string name) : strm(create_path(name)) {}
+        ~StorageWriter() {this->strm.close();}
+        template <typename T>
+        uint32_t write_metadata_entry(const char* name, T value);
+
+        uint32_t write_metadata(EnvArguments& arguments) override;
+
+        uint32_t write_frames(vector<Frame>& frames) override;
+    };
+
+    class StreamWriter : public Writer {
+    private:
+        ostream& strm;
+    public:
+        StreamWriter(ostream& stream) : strm(stream) {}
+        ~StreamWriter() {this->flush();}
+        template <typename T>
+        uint32_t write_metadata_entry(const char* name, T value);
+
+        uint32_t write_metadata(EnvArguments& arguments) override;
+
+        uint32_t write_frames(vector<Frame>& frames) override;
+
+        void flush();
     };
 
 
