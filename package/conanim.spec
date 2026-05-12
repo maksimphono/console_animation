@@ -11,12 +11,13 @@ Source0:        conanim-0.0.0.tar.gz
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
 BuildRequires:  ncurses-devel
+BuildRequires:  fmt-devel
 
 # Required to RUN the code (found via execvp)
 Requires:       ncurses
 Requires:       ffmpeg
 Requires:       jp2a
-
+Requires:       fmt
 %description
 (Experimental build)
 Simple program, that can convert video file into ASCII animation and play it in the terminal 
