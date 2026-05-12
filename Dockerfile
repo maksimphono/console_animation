@@ -10,7 +10,6 @@ RUN apt-get update && \
         libncursesw5-dev \
         ffmpeg \
         jp2a \
-        libfmt-dev \
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

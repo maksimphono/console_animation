@@ -20,8 +20,6 @@ set(CMAKE_CXX_EXTENSIONS FALSE)
 #    -Werror        # Treat ALL warnings as ERRORS (This stops the build)
 #)
 
-find_package(fmt REQUIRED)
-
 # Find the ncurses library
 # find_package will search for ncurses and set variables like NCURSES_LIBRARIES and NCURSES_INCLUDE_DIR
 find_package(Curses REQUIRED)
@@ -40,7 +38,6 @@ target_include_directories(conanim PRIVATE ${CURSES_INCLUDE_DIR})
 # Add include directories for ncurses (if find_package didn't handle it automatically, though it usually does)
 target_link_libraries(conanim PRIVATE ${CURSES_LIBRARIES})
 
-target_link_libraries(conanim PRIVATE fmt::fmt)
 
 # Install on the system
 install(TARGETS conanim DESTINATION bin)
