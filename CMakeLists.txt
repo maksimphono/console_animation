@@ -7,7 +7,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Project name
-project(Main CXX)
+project(conanim)
 
 set(CMAKE_CXX_STANDARD 20) # use C++20 features
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
@@ -20,12 +20,16 @@ find_package(Curses REQUIRED)
 # Add the executable
 # mytui is the name of your executable
 # mytui.cpp is your source file
-add_executable(main src/storage.cpp src/env_arguments.cpp src/frames.cpp src/render.cpp src/main.cpp)
+add_executable(conanim src/storage.cpp src/env_arguments.cpp src/frames.cpp src/render.cpp src/main.cpp)
 
-#target_include_directories(main PRIVATE ${CURSES_INCLUDE_DIR})
+
 # Link the executable to the ncurses library
 # target_link_libraries links the 'mytui' executable with the found ncurses libraries
-target_link_libraries(main PRIVATE ${CURSES_LIBRARIES})
+
+target_include_directories(conanim PRIVATE ${CURSES_INCLUDE_DIR})
 
 # Add include directories for ncurses (if find_package didn't handle it automatically, though it usually does)
-# target_include_directories(main PRIVATE ${NCURSES_INCLUDE_DIR})
+target_link_libraries(conanim PRIVATE ${CURSES_LIBRARIES})
+
+# Install on the system
+install(TARGETS conanim DESTINATION bin)
