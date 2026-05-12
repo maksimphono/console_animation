@@ -1,10 +1,3 @@
-#if __has_include(<format>)
-    #include <format>
-#else
-    #include <fmt/format.h>
-    using namespace fmt;
-#endif
-
 #include <vector>
 #include <queue>
 #include <thread>
@@ -14,13 +7,14 @@
 #include <future>
 
 #include "../include/exception.hpp"
+#include "format.cpp"
 
 namespace threadpool_ns {
 
     DEFINE_EXCEPTION_CLASS(ThreadPool_exception, "Something went wrong whith thread pool");
 
     #define THROW_GENERAL_THREAD_POOL_EXP(what) \
-        throw ThreadPool_exception(format("Exception during task execution in thread, content: {0}", what))
+        throw ThreadPool_exception(myformat("Exception during task execution in thread, content: %s", what))
 
     #define THROW_STOPPER_THREAD_SUBMIT \
         throw ThreadPool_exception("Error, submission to the stopped thread pool")
@@ -46,7 +40,7 @@ namespace threadpool_ns {
                         try {
                             task();
                         } catch (const std::exception& e) {
-                            THROW_GENERAL_THREAD_POOL_EXP(e.what());
+                            THROW_GENERAL_THREAD_POOL_EXP(string(e.what()).c_str());
                         }
                     }
                 });

@@ -19,7 +19,7 @@ namespace render_ns {
 
         auto save_file = [&name, &frames, &arguments]() {
             if (storage_ns::save_file(name, frames, arguments) == frames.size()) {
-                cout << format("File '{0}' saved successfully!", name) << endl;
+                cout << myformat("File '%s' saved successfully!", name.c_str()) << endl;
             } else {
                 throw StorageSaveException();
             }
@@ -34,14 +34,14 @@ namespace render_ns {
                 cout << "Sorry, can't save smpty string, input at leat one symbol!" << endl;
             } else if (storage_ns::check_exsistance(name)) {
 
-                cout << format("File with name '{0}' already exist, do you want to override it?\n[Y/n]: ", name);
+                cout << myformat("File with name '%s' already exist, do you want to override it?\n[Y/n]: ", name.c_str());
                 cin >> answer;
 
                 if (answer == "y" || answer == "Y") {
                     save_file();
                     break;
                 } else {
-                    cout << format("File '{0}' wasn't saved.", name) << endl;
+                    cout << myformat("File '%s' wasn't saved.", name.c_str()) << endl;
                 }
 
             } else {

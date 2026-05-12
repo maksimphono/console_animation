@@ -1,12 +1,5 @@
 #pragma once
 
-#if __has_include(<format>)
-    #include <format>
-#else
-    #include <fmt/format.h>
-    using namespace fmt;
-#endif
-
 #include <iostream>
 #include <filesystem>
 #include <string>
@@ -19,6 +12,7 @@
 //#include "./frames.hpp"
 //#include "./env_arguments.hpp"
 #include "./exception.hpp"
+#include "../utils/format.cpp"
 
 namespace frames_ns {
     class Frame;

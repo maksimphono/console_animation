@@ -1,12 +1,5 @@
 #pragma once
 
-#if __has_include(<format>)
-    #include <format>
-#else
-    #include <fmt/format.h>
-    using namespace fmt;
-#endif
-
 #include <cstdlib>
 #include <filesystem>
 #include <string>
@@ -22,18 +15,19 @@
 
 #include "./env_arguments.hpp"
 #include "./exception.hpp"
+#include "../utils/format.cpp"
 
 using namespace std;
 using EnvArguments = env_arguments_ns::EnvArguments;
 
 #define THROW_CANT_CREATE_TEMP_DIR_EXP(path) \
-    throw FramesException(format("Error, can't create temporary directory {0}.", path));
+    throw FramesException(myformat("Error, can't create temporary directory %s.", path));
 
 #define THROW_JP2A_PROGRAM_ISSUE_EXP \
-    throw FramesException(format("Error, something is wrong with underlying utility 'jp2a'."));
+    throw FramesException(myformat("Error, something is wrong with underlying utility 'jp2a'."));
 
 #define THROW_VIDEO_DURATION_EXP \
-    throw FramesException(format("Error, something is wrong with underlying utility 'ffprobe'."));
+    throw FramesException(myformat("Error, something is wrong with underlying utility 'ffprobe'."));
 
 #define THROW_INPUT_FILE_NOT_FOUND_EXP \
     throw FramesException("Error, input video file wasn't found. Did you spell it correctly?");

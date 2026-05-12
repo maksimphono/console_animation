@@ -26,8 +26,8 @@ namespace storage_ns {
 
         this->strm.seekp(0);
         n += this->write_metadata_entry<int>("FPS", (int)arguments.fps);
-        n += this->write_metadata_entry("SIZE", format("{0}x{1}", arguments.size[0], arguments.size[1]));
-        n += this->write_metadata_entry("TIME", format("{0}-{1}", arguments.time[0], arguments.time[1]));
+        n += this->write_metadata_entry("SIZE", myformat("%ux%u", arguments.size[0], arguments.size[1]));
+        n += this->write_metadata_entry("TIME", myformat("%u-%u", arguments.time[0], arguments.time[1]));
 
         this->strm << endl;
         return n;
@@ -50,8 +50,8 @@ namespace storage_ns {
         uint32_t n = 0;
 
         n += this->write_metadata_entry<int>("FPS", (int)arguments.fps);
-        n += this->write_metadata_entry("SIZE", format("{0}x{1}", arguments.size[0], arguments.size[1]));
-        n += this->write_metadata_entry("TIME", format("{0}-{1}", arguments.time[0], arguments.time[1]));
+        n += this->write_metadata_entry("SIZE", myformat("%ux%u", arguments.size[0], arguments.size[1]));
+        n += this->write_metadata_entry("TIME", myformat("%u-%u", arguments.time[0], arguments.time[1]));
 
         this->strm << endl;
         return n;

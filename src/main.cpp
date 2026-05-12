@@ -9,6 +9,7 @@
 #include "include/storage.hpp"
 
 #include "include/CLI11.hpp"
+#include "utils/format.cpp"
 
 using namespace std;
 
