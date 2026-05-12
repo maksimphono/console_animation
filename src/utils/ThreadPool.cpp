@@ -1,8 +1,14 @@
+#if __has_include(<format>)
+    #include <format>
+#else
+    #include <fmt/format.h>
+    using namespace fmt;
+#endif
+
 #include <vector>
 #include <queue>
 #include <thread>
 #include <mutex>
-#include <format>
 #include <condition_variable>
 #include <functional>
 #include <future>

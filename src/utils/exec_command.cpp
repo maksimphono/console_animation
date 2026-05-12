@@ -30,7 +30,6 @@ namespace exec_command_ns{
             stringstream ss(command_templates);
             vector<string> tokens;
             string token;
-            bool cmd_is_template = false;
 
             while(ss >> token) {
                 tokens.push_back(token);
@@ -55,7 +54,7 @@ namespace exec_command_ns{
         }
 
     public:
-        CommandExecutor(string command_templates, uint32_t buffer_size = 256, bool parallel = false) {
+        CommandExecutor(string command_templates, uint32_t buffer_size = 256) {
             this->buffer_size = buffer_size;
             this->create_command_array(command_templates);
         }
@@ -78,13 +77,12 @@ namespace exec_command_ns{
         template <typename T=string>
         T exec(int in_pipe = -9, ...) {
             va_list args, args_cpy;
-            int size = 0;
 
             va_start(args, in_pipe);
 
             for (auto& pair : this->command_templates) {
                 va_copy(args_cpy, args);
-                int size = vsnprintf(nullptr, 0, pair.tmplt.c_str(), args); // count number of symbols if successfully written
+                size_t size = vsnprintf(nullptr, 0, pair.tmplt.c_str(), args); // count number of symbols if successfully written
 
                 // can't figure out how to reallocate space here, so just deleting and allocating again
                 if (size > strlen(this->command[pair.idx])) {

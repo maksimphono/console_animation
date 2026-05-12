@@ -68,7 +68,7 @@ namespace frames_ns {
         pick_frame_command_template.wait();
         convert_frame_command_template.wait();
 
-        if (output.length() != (size[0] + 1) * size[1]) {
+        if (output.length() != (size_t)((size[0] + 1) * size[1])) {
             THROW_JP2A_PROGRAM_ISSUE_EXP;
         }
 

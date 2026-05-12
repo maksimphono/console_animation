@@ -1,7 +1,6 @@
 #include <iostream>
 #include <regex>
 #include <exception>
-#include <format>
 #include <cstring>
 #include <thread>
 

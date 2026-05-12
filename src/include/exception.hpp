@@ -12,9 +12,4 @@ public:
 };
 
 
-#define DEFINE_EXCEPTION_CLASS(class_name, default_message) \
-class class_name : public Exception { \
-public: \
-    explicit class_name() : Exception(default_message) {} \
-    explicit class_name(const std::string& message) : Exception(message) {} \
-};
+#define DEFINE_EXCEPTION_CLASS(class_name, default_message) class class_name : public Exception { public: explicit class_name() : Exception(default_message) {} explicit class_name(const std::string& message) : Exception(message) {} };

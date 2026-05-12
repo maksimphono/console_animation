@@ -1,6 +1,12 @@
 #pragma once
 
-#include <format>
+#if __has_include(<format>)
+    #include <format>
+#else
+    #include <fmt/format.h>
+    using namespace fmt;
+#endif
+
 #include <iostream>
 #include <filesystem>
 #include <string>

@@ -15,7 +15,7 @@ namespace render_ns {
         string name = "";
         string answer = "";
 
-        auto handle_resize = [](int signum) {};
+        auto handle_resize = [](int) {};
 
         auto save_file = [&name, &frames, &arguments]() {
             if (storage_ns::save_file(name, frames, arguments) == frames.size()) {
@@ -83,7 +83,7 @@ namespace render_ns {
         uint32_t i = 0;
 
         while (true) {
-            ch = getch();
+            ch = getch();   
 
             process_key(ch);
 
@@ -91,11 +91,12 @@ namespace render_ns {
                 break;
             }
 
-            mvprintw(0, 0, frames[i].body.c_str());
+            mvprintw(0, 0, "%s", frames[i].body.c_str());
 
             refresh();
             sleep(1000 / fps);
-            i = ++i % frames.size();
+            ++i;
+            i %= frames.size();
         }
 
         endwin(); // cleanup

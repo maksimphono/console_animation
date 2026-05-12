@@ -1,10 +1,16 @@
 #pragma once
 
+#if __has_include(<format>)
+    #include <format>
+#else
+    #include <fmt/format.h>
+    using namespace fmt;
+#endif
+
 #include <cstdlib>
 #include <filesystem>
 #include <string>
 #include <cstring>
-#include <format>
 #include <iostream>
 #include <vector>
 #include <future>
