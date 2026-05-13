@@ -2,8 +2,8 @@ Source: conanim
 Section: utils
 Priority: optional
 Maintainer: Maksim Trukhin <trukhinmaksimof@proton.me>
-Build-Depends: debhelper-compat (= 13), cmake, g++, libncurses-dev
-Standards-Version: 4.5.0
+Build-Depends: debhelper-compat (= 12), cmake, g++, libncurses-dev
+Standards-Version: 4.1.4
 
 Package: conanim
 Architecture: any

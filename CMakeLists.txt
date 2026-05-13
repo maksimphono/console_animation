@@ -21,24 +21,31 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 #    -Werror        # Treat ALL warnings as ERRORS (This stops the build)
 #)
 
+# For older systems (CentOS 8, Debian 11)
 find_package(Threads REQUIRED)
 
 # Find the ncurses library
-# find_package will search for ncurses and set variables like NCURSES_LIBRARIES and NCURSES_INCLUDE_DIR
 find_package(Curses REQUIRED)
 
 # Add the executable
-# mytui is the name of your executable
-# mytui.cpp is your source file
 add_executable(conanim src/storage.cpp src/env_arguments.cpp src/frames.cpp src/render.cpp src/main.cpp)
 
-
 # Link the executable to the ncurses library
-# target_link_libraries links the 'mytui' executable with the found ncurses libraries
 
 target_include_directories(conanim PRIVATE ${CURSES_INCLUDE_DIR})
 
-# Add include directories for ncurses (if find_package didn't handle it automatically, though it usually does)
+
+# For older systems (CentOS 8, Debian 11)
+# Will forecefully link stdc++fs library (for module <filesystem>)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
+        target_link_libraries(conanim PRIVATE stdc++fs)
+    elseif(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 10.0)
+        target_link_libraries(conanim PRIVATE stdc++fs)
+    endif()
+endif()
+
+# Add include directories for ncurses (if find_package didn't handle it automatically)
 target_link_libraries(conanim PRIVATE ${CURSES_LIBRARIES})
 
 target_link_libraries(conanim PRIVATE Threads::Threads)

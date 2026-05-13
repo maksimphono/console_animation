@@ -5,8 +5,8 @@ Architecture: any
 Version: 0.0.0-1
 Maintainer: Maksim Trukhin <trukhinmaksimof@proton.me>
 Homepage: https://github.com/maksimphono/console_animation
-Standards-Version: 4.6.2
-Build-Depends: debhelper-compat (= 13), cmake, g++, libncurses-dev
+Standards-Version: 4.1.4
+Build-Depends: debhelper-compat (= 12), cmake, g++, libncurses-dev
 Files:
  conanim-0.0.0.tar.gz
 
