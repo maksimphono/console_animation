@@ -160,9 +160,3 @@ namespace exec_command_ns{
     };
 
 }
-
-template <typename T>
-static T exec_command(std::string cmd, std::vector<char> bytes_in = {}, uint32_t bts = 1024) {
-    T a;
-    return a;
-}

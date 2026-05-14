@@ -23,7 +23,7 @@ namespace env_arguments_ns {
         smatch match_info;
 
         if (!regex_match(value, match_info, pattern)) {
-            THROW_PATH_INVALID_EXP(value);
+            THROW_PATH_INVALID_EXP(value.c_str());
         }
     }
 
@@ -40,14 +40,14 @@ namespace env_arguments_ns {
         smatch match_info;
 
         if (!regex_match(raw_size, match_info, pattern)) {
-            THROW_SIZE_INVALID_EXP(raw_size);
+            THROW_SIZE_INVALID_EXP(raw_size.c_str());
         }
         uint32_t w, h;
 
         sscanf(raw_size.c_str(), "%ux%u", &w, &h);
 
         if (MIN_SIZE > w || w > MAX_SIZE || MIN_SIZE > h || h > MAX_SIZE) {
-            THROW_SIZE_INVALID_EXP(raw_size);
+            THROW_SIZE_INVALID_EXP(raw_size.c_str());
         }
 
         this->size[0] = static_cast<uint8_t>(w);
@@ -111,6 +111,11 @@ namespace env_arguments_ns {
     }
 
     EnvArguments& get_env_arguments(int argc, char** argv) {
+        if (argc == 2 && strcmp(argv[1], "--version") == 0) {
+            // just print version and exit
+            cout << _VERSION << endl;
+            exit(0);
+        }
         EnvArguments& env_arguments = env_arguments_ns::env_arguments;
         RawArguments& raw_arguments = env_arguments_ns::default_arguments;
 

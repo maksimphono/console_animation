@@ -6,7 +6,7 @@
 
 using namespace std;
 
-bool check_path(string path) {
+static bool check_path(string path) {
     if (!filesystem::exists(path)) {
         return false;
     }
