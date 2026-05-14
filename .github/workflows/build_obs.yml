@@ -27,7 +27,7 @@ jobs:
           cd package
           mkdir conanim-$VERSION
           cp ../README.md conanim-$VERSION
-          cp ../LICENCE conanim-$VERSION
+          cp ../LICENSE conanim-$VERSION
           cp ../src conanim-$VERSION
           tar -czvf conanim-$VERSION.tar.gz conanim-$VERSION
 
