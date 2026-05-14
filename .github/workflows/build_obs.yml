@@ -18,8 +18,8 @@ jobs:
           echo "[general]" >> ~/.config/osc/oscrc
           echo "apiurl = https://api.opensuse.org" >> ~/.config/osc/oscrc
           echo "[https://api.opensuse.org]" >> ~/.config/osc/oscrc
-          user = ${{secrets.OBS_LOGIN}}
-          pass = ${{secrets.OBS_PASSWORD}}
+          echo "user = ${{secrets.OBS_LOGIN}}" >> ~/.config/osc/oscrc
+          echo "pass = ${{secrets.OBS_PASSWORD}}" >> ~/.config/osc/oscrc
 
       - name: Create a tar archive
         run: |
