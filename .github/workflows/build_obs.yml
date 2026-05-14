@@ -1,0 +1,46 @@
+name: Build OBS package
+on:
+  push:
+    branches: [ test-build_obs ]
+
+jobs:
+  obs-build-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install osc
+        run: sudo apt-get install -y osc
+
+      - name: Configure osc
+        run: |
+          mkdir -p ~/.config/osc
+          touch ~/.config/osc/oscrc
+          echo "[general]" >> ~/.config/osc/oscrc
+          echo "apiurl = https://api.opensuse.org" >> ~/.config/osc/oscrc
+          echo "[https://api.opensuse.org]" >> ~/.config/osc/oscrc
+          echo "user = ${{secrets.OBS_LOGIN}}" >> ~/.config/osc/oscrc
+          echo "pass = ${{secrets.OBS_PASSWORD}}" >> ~/.config/osc/oscrc
+
+      - name: Create a tar archive
+        run: |
+          VERSION=${{ vars.VERSION }}
+          cd package
+          mkdir conanim-$VERSION
+          cp ../CMakeLists.txt conanim-$VERSION
+          cp ../README.md conanim-$VERSION
+          cp ../LICENSE conanim-$VERSION
+          cp -r ../src conanim-$VERSION
+          tar -czvf conanim-$VERSION.tar.gz conanim-$VERSION
+
+      - name: Push package
+        run: |
+          VERSION=${{ vars.VERSION }}
+          cd package
+          osc checkout home:${{ secrets.OBS_LOGIN }}:conanim
+          cd home:${{ secrets.OBS_LOGIN }}:conanim/conanim
+          rm -f ./*.tar.gz
+          cp ../../conanim-$VERSION.tar.gz .
+          cp ../../conanim.spec .
+          cp ../../debian.* .
+          osc addremove
+          osc commit -m "Pushing package $VERSION"

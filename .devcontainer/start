@@ -1,3 +1,0 @@
-docker start console_video_ubnt_develop
-docker exec -it console_video_ubnt_develop /bin/bash
-
