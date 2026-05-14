@@ -1,7 +1,7 @@
 name: Build OBS package
 on:
   push:
-    branches: [ test-build_obs ]
+    branches: [ master ]
 
 jobs:
   obs-build-package:

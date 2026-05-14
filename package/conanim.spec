@@ -37,7 +37,7 @@ Simple program, that can convert video file into ASCII animation and play it in 
 %doc README.md
 
 %changelog
-* Thu May 14 2026 Maksim Trukhin <trukhinmaksimof@proton.me> - 2.0.0-1
+* Thu May 15 2026 Maksim Trukhin <trukhinmaksimof@proton.me> - 2.0.0-1
 - Relese of version 2.0.0
 
 * Mon May 12 2026 Maksim Trukhin <trukhinmaksimof@proton.me> - 0.0.0-1
