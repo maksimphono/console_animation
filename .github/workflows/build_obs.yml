@@ -26,6 +26,7 @@ jobs:
           VERSION=${{ vars.VERSION }}
           cd package
           mkdir conanim-$VERSION
+          cp ../CMakeLists.txt conanim-$VERSION
           cp ../README.md conanim-$VERSION
           cp ../LICENSE conanim-$VERSION
           cp -r ../src conanim-$VERSION
