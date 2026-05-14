@@ -1,11 +1,11 @@
 Name:           conanim
-Version:        0.0.0
+Version:        2.0.0
 Release:        1%{?dist}
 Summary:        Visualizing the woods in the terminal
 
 License:        MIT
 URL:            https://github.com/maksimphono/console_animation
-Source0:        conanim-0.0.0.tar.gz
+Source0:        conanim-2.0.0.tar.gz
 
 # Required to COMPILE the code
 BuildRequires:  gcc-c++
@@ -18,11 +18,10 @@ Requires:       ffmpeg
 Requires:       jp2a
 
 %description
-(Experimental build)
 Simple program, that can convert video file into ASCII animation and play it in the terminal 
 
 %prep
-%setup -q -n conanim-0.0.0
+%setup -q -n conanim-2.0.0
 #%autosetup
 
 %build
@@ -38,5 +37,8 @@ Simple program, that can convert video file into ASCII animation and play it in 
 %doc README.md
 
 %changelog
+* Thu May 14 2026 Maksim Trukhin <trukhinmaksimof@proton.me> - 2.0.0-1
+- Relese of version 2.0.0
+
 * Mon May 12 2026 Maksim Trukhin <trukhinmaksimof@proton.me> - 0.0.0-1
 - Initial build with ffmpeg and jp2a runtime support.
