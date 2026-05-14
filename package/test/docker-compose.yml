@@ -1,0 +1,11 @@
+services:
+  ubuntu-test:
+    container_name: "conanim_test-ub"
+    image: ubuntu:latest
+    #build: .
+    volumes:
+      - /home/trukhinmaksim/Maksim/Projects/cli/01_console_video/package/test/debian11:/package
+      - /home/trukhinmaksim/Maksim/Projects/cli/01_console_video:/home
+    tty: true
+    stdin_open: true
+  

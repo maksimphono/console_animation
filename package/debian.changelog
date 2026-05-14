@@ -1,0 +1,11 @@
+conanim (2.0.0-1) stable; urgency=low
+
+  * Release of version 2.0.0.
+
+ -- Maksim Trukhin <trukhinmaksimof@proton.me>  Thu, 15 May 2026 09:00:00 +0000
+
+conanim (0.0.0-1) unstable; urgency=low
+
+  * Initial experimental release.
+
+ -- Maksim Trukhin <trukhinmaksimof@proton.me>  Mon, 13 May 2026 09:00:00 +0000

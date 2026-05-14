@@ -1,26 +1,14 @@
 #include <iostream>
 #include <regex>
 #include <exception>
-#include <format>
 #include <cstring>
+#include <thread>
 
 #include "include/env_arguments.hpp"
 #include "include/storage.hpp"
-#include "include/exception.hpp"
+#include "include/CLI11.hpp"
 
 using namespace std;
-
-#define THROW_PATH_INVALID_EXP(path) \
-    throw ArgumentException(format("Can't find file \"{0}\", make sure filename and extension is spelled correctly. Supported file formats: mp4", path))
-
-#define THROW_SIZE_INVALID_EXP(size) \
-    throw ArgumentException(format("Sorry, can't accept size \"{0}\". Make sure to specify size as 'WxH' where 1 <= W, H <= 255", size))
-
-#define THROW_FPS_INVALID_EXP(fps) \
-    throw ArgumentException(format("Sorry, can't accept fps value {0}. Make sure to specify fps value as integer 1 <= fps <= 20", fps))
-
-#define THROW_TIME_INVALID_EXP \
-    throw ArgumentException("Time argument wasn't specified correctly, time must be specified in form of 'S-E' where 0 <= S < E")
 
 #define return_if_empty(str) if (str == "") return
 
@@ -28,15 +16,14 @@ namespace env_arguments_ns {
     EnvArguments env_arguments;
 
     static const string empty = "";
-
-    DEFINE_EXCEPTION_CLASS(ArgumentException, "Exception with arguments");
+    static RawArguments default_arguments = {false, false, false, "", "", "2", "55x16", "0-10", thread::hardware_concurrency()};
 
     void assert_path(string value) {
         regex pattern("^((/|.|..)[^/\\0]+)*(/)?$");
         smatch match_info;
 
         if (!regex_match(value, match_info, pattern)) {
-            THROW_PATH_INVALID_EXP(value);
+            THROW_PATH_INVALID_EXP(value.c_str());
         }
     }
 
@@ -53,14 +40,14 @@ namespace env_arguments_ns {
         smatch match_info;
 
         if (!regex_match(raw_size, match_info, pattern)) {
-            THROW_SIZE_INVALID_EXP(raw_size);
+            THROW_SIZE_INVALID_EXP(raw_size.c_str());
         }
         uint32_t w, h;
 
         sscanf(raw_size.c_str(), "%ux%u", &w, &h);
 
-        if (1 > w || w > 255 || 1 > h || h > 255) {
-            THROW_SIZE_INVALID_EXP(raw_size);
+        if (MIN_SIZE > w || w > MAX_SIZE || MIN_SIZE > h || h > MAX_SIZE) {
+            THROW_SIZE_INVALID_EXP(raw_size.c_str());
         }
 
         this->size[0] = static_cast<uint8_t>(w);
@@ -73,7 +60,7 @@ namespace env_arguments_ns {
 
         sscanf(raw_fps.c_str(), "%d", &fps);
 
-        if (fps > 20 || fps < 1)
+        if (fps > MAX_FPS || fps < MIN_FPS)
             THROW_FPS_INVALID_EXP(fps);
 
         this->fps = static_cast<uint8_t>(fps);
@@ -101,34 +88,59 @@ namespace env_arguments_ns {
         this->name = raw_name;
     }
 
-    string get_env(const char* name) {
-        try {
-            return getenv(name);
-        } catch(std::exception& exp) {
-            return empty;
-        }
+    void EnvArguments::set_cores(unsigned int cores){
+        this->cores = min(cores, thread::hardware_concurrency());
     }
 
-    EnvArguments& get_env_arguments() {
-        EnvArguments& env_arguments = env_arguments_ns::env_arguments;
+    int get_raw_arguments(RawArguments& raw_arguments, int argc, char** argv){
+        CLI::App app{"Simple program, that can convert video file into ASCII animation and play it in the terminal"};
+        argv = app.ensure_utf8(argv);
 
-        if (get_env("LIST_FILES") == "1") {
+        app.add_flag("-d,--del", raw_arguments.delete_file, "Whether to delete video with specified name (name must be specified with '--name')");
+        app.add_flag("-l,--list", raw_arguments.list_stored_files, "List all saved files");
+        app.add_flag("-o,--out", raw_arguments.write_to_stdout, "Write resulting frames into stdout");
+        app.add_option("-i,--input", raw_arguments.path, "Path to input file");
+        app.add_option("-f,--fps", raw_arguments.fps, "FPS");
+        app.add_option("-s,--size", raw_arguments.size, "Size of the resulting video (width * height) in symbols");
+        app.add_option("-t,--time", raw_arguments.time, "Which time fragment of the input file to convert");
+        app.add_option("-n,--name", raw_arguments.name, "Name of the video");
+        app.add_option<unsigned int>("-c,--cores", raw_arguments.cores, "Number of CPU cores to use when converting the videofile (all available cores are used by default)");
+
+        CLI11_PARSE(app, argc, argv);
+        return 0;
+    }
+
+    EnvArguments& get_env_arguments(int argc, char** argv) {
+        if (argc == 2 && strcmp(argv[1], "--version") == 0) {
+            // just print version and exit
+            cout << _VERSION << endl;
+            exit(0);
+        }
+        EnvArguments& env_arguments = env_arguments_ns::env_arguments;
+        RawArguments& raw_arguments = env_arguments_ns::default_arguments;
+
+        get_raw_arguments(raw_arguments, argc, argv);
+
+        env_arguments.write_to_stdout = raw_arguments.write_to_stdout;
+        if (raw_arguments.list_stored_files) {
             // if user want to list files, no other work is done
             env_arguments.list_stored_files = true;
-        } else if (get_env("NAME_TO_DELETE") != empty) {
-            // if user wants to delete a file from the storage
-            env_arguments.delete_file = true;
-            env_arguments.set_name(get_env("NAME_TO_DELETE"));
-        } else if (get_env("NAME") != empty) {
-            // frames will be loaded from the file
-            env_arguments.loaded_from_file = true;
-            env_arguments.set_name(get_env("NAME"));
+        } else if (raw_arguments.name != empty) {
+            if (raw_arguments.delete_file) {
+                // if user wants to delete a file from the storage
+                env_arguments.delete_file = true;
+            } else {
+                // frames will be loaded from the file
+                env_arguments.loaded_from_file = true;
+            }
+            env_arguments.set_name(raw_arguments.name);
         } else {
             // frames will be created from mp4 file
-            env_arguments.set_path(get_env("INPUT_PATH"));
-            env_arguments.set_fps(get_env("FPS"));
-            env_arguments.set_size(get_env("SIZE"));
-            env_arguments.set_time(get_env("TIME"));
+            env_arguments.set_path(raw_arguments.path);
+            env_arguments.set_fps(raw_arguments.fps);
+            env_arguments.set_size(raw_arguments.size);
+            env_arguments.set_time(raw_arguments.time);
+            env_arguments.set_cores(raw_arguments.cores);
         }
 
         return env_arguments;

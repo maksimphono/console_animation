@@ -1,0 +1,8 @@
+<directory name="conanim" rev="91" vrev="91" srcmd5="d06da6f069045418787f7d7c587db1b3">
+  <entry name="conanim-0.0.0.tar.gz" md5="f5c42fb1beb53072c29647c55c28f047" size="106189" mtime="1778698143" />
+  <entry name="conanim.spec" md5="a1b52dab9bcd50e83e5640cbe4eb5501" size="896" mtime="1778570333" />
+  <entry name="debian.changelog" md5="342f6b25b80d7e135ce194e3e864dedd" size="156" mtime="1778660655" />
+  <entry name="debian.control" md5="cfba80edf4b22f9f73c9983e0e950d70" size="446" mtime="1778660649" />
+  <entry name="debian.dsc" md5="651e496198d2fc4b92bcfdf4b0764c89" size="324" mtime="1778660661" />
+  <entry name="debian.rules" md5="69b405edce7597b4d69b30cb7d3ffb97" size="128" mtime="1778598250" />
+</directory>

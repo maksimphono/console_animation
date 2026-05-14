@@ -1,0 +1,5 @@
+<package name="conanim" project="home:trukhinmaksim:conanim">
+  <title>Conanim</title>
+  <description>Simple program, that can convert video file into ASCII animation and play it in the terminal</description>
+</package>
+
