@@ -28,7 +28,7 @@ jobs:
           mkdir conanim-$VERSION
           cp ../README.md conanim-$VERSION
           cp ../LICENSE conanim-$VERSION
-          cp ../src conanim-$VERSION
+          cp -r ../src conanim-$VERSION
           tar -czvf conanim-$VERSION.tar.gz conanim-$VERSION
 
       - name: Push package
